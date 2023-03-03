@@ -32,3 +32,14 @@ class ChangePasswordSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['current_password', 'new_password', 'confirm_password']
+
+
+class ResetPasswordSerializer(serializers.ModelSerializer):
+    confirm_code = serializers.CharField(
+        required=True,
+        write_only=True,
+    )
+
+    class Meta:
+        model = User
+        fields = ['confirm_code']

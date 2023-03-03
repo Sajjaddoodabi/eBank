@@ -1,13 +1,15 @@
 import datetime
-
 import jwt
+from django.http import HttpResponseRedirect
+from django.shortcuts import redirect
+from django.urls import reverse
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
 
 from users.models import User
-from users.serializers import UserSerializer, ChangePasswordSerializer
+from users.serializers import UserSerializer, ChangePasswordSerializer, ResetPasswordSerializer
 
 
 class RegisterView(APIView):
@@ -147,7 +149,29 @@ class ChangePasswordView(APIView):
                 response = {'detail': 'passwords do NOT match'}
                 return Response(response)
 
+            user.set_password(confirm_password)
+            user.save()
+
             response = {'detail': 'password changed successfully!'}
+            return Response(response)
+
+        return Response(serializer.errors)
+
+
+class ResetPasswordView(APIView):
+    def post(self, request):
+        serializer = ResetPasswordSerializer(data=request.data)
+        if serializer.is_valid():
+            user = get_user(request)
+            user.is_active = False
+            user.save()
+
+            confirm_code = request.data['confirm_code']
+            if confirm_code != '12345':
+                response = {'detail': 'code is invalid!'}
+                return Response(response)
+
+            response = {'detail': 'password reset successfully!'}
             return Response(response)
 
         return Response(serializer.errors)
