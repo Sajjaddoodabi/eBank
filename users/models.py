@@ -3,6 +3,7 @@ from django.db import models
 
 
 class User(AbstractUser):
+    mobile = models.CharField(max_length=11)
     address = models.CharField(max_length=200)
     national_code = models.CharField(max_length=20)
     postal_code = models.CharField(max_length=20)
