@@ -4,9 +4,10 @@ import jwt
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.generics import ListAPIView
 
 from users.models import User
-from users.serializers import UserSerializer
+from users.serializers import UserSerializer, ChangePasswordSerializer
 
 
 class RegisterView(APIView):
@@ -82,6 +83,11 @@ class UserView(APIView):
         return Response(serializer.data)
 
 
+class UserListView(ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+
 def get_user(request):
     token = request.COOKIES.get('jwt')
 
@@ -123,6 +129,25 @@ class ActiveUser(APIView):
         return Response(response)
 
 
-class ChangePassword(APIView):
+class ChangePasswordView(APIView):
     def post(self, request):
-        pass
+        serializer = ChangePasswordSerializer(data=request.data)
+        if serializer.is_valid():
+            user = get_user(request)
+
+            password = serializer.data['current_password']
+            new_password = serializer.data['new_password']
+            confirm_password = serializer.data['confirm_password']
+
+            if not user.check_password(password):
+                response = {'detail': 'current password is wrong!'}
+                return Response(response)
+
+            if new_password != confirm_password:
+                response = {'detail': 'passwords do NOT match'}
+                return Response(response)
+
+            response = {'detail': 'password changed successfully!'}
+            return Response(response)
+
+        return Response(serializer.errors)
