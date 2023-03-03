@@ -93,28 +93,13 @@ class UserUpdateView(APIView):
     def put(self, request):
         user = get_user(request)
 
-        first_name = request.data['first_name']
-        last_name = request.data['last_name']
-        username = request.data['username']
-        mobile = request.data['mobile']
-        national_code = request.data['national_code']
-        postal_code = request.data['postal_code']
-        address = request.data['address']
-
-        if first_name:
-            user.first_name = first_name
-        if last_name:
-            user.last_name = last_name
-        if username:
-            user.username = username
-        if mobile:
-            user.mobile = mobile
-        if national_code:
-            user.national_code = national_code
-        if postal_code:
-            user.postal_code = postal_code
-        if address:
-            user.address = address
+        user.first_name = request.data['first_name']
+        user.last_name = request.data['last_name']
+        user.username = request.data['username']
+        user.mobile = request.data['mobile']
+        user.national_code = request.data['national_code']
+        user.postal_code = request.data['postal_code']
+        user.address = request.data['address']
 
         user.save()
 
