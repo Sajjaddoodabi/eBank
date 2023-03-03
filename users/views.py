@@ -73,12 +73,10 @@ class LogoutView(APIView):
         response.delete_cookie('jwt')
         response.data = {'detail': 'Logged out successfully!'}
 
+
 class UserView(APIView):
     def get(self, request):
         user = get_user(request)
-
-        if not user:
-            raise AuthenticationFailed('Unauthenticated')
 
         serializer = UserSerializer(user)
         return Response(serializer.data)
@@ -97,14 +95,34 @@ def get_user(request):
 
     user = User.objects.filter(id=payload['id']).first()
 
+    if not user:
+        raise AuthenticationFailed('Unauthenticated')
+
     return user
 
 
 class ApproveUser(APIView):
     def post(self, request):
-        pass
+        user = get_user(request)
+
+        user.is_approved = True
+        user.save()
+
+        response = {'detail': 'User has been approved!'}
+        return Response(response)
 
 
 class ActiveUser(APIView):
+    def post(self, request):
+        user = get_user(request)
+
+        user.is_active = True
+        user.save()
+
+        response = {'detail': 'User has been activated!'}
+        return Response(response)
+
+
+class ChangePassword(APIView):
     def post(self, request):
         pass
