@@ -12,6 +12,21 @@ class UserSerializer(serializers.ModelSerializer):
         }
 
 
+class UserFullSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        read_only_fields = ('is_approved', 'is_active')
+        fields = ['id', 'first_name', 'last_name', 'username', 'mobile', 'national_code', 'address', 'postal_code',
+                  'is_approved', 'is_active']
+
+
+class UserMiniSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        read_only_fields = ('is_approved', 'is_active')
+        fields = ['id', 'first_name', 'last_name', 'username', 'mobile', 'is_approved', 'is_active']
+
+
 class ChangePasswordSerializer(serializers.ModelSerializer):
     current_password = serializers.CharField(
         required=True,

@@ -7,7 +7,8 @@ from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
 
 from users.models import User
-from users.serializers import UserSerializer, ChangePasswordSerializer, ResetPasswordSerializer
+from users.serializers import UserSerializer, ChangePasswordSerializer, ResetPasswordSerializer, UserMiniSerializer, \
+    UserFullSerializer
 
 
 class RegisterView(APIView):
@@ -79,7 +80,7 @@ class UserView(APIView):
     def get(self, request):
         user = get_user(request)
 
-        serializer = UserSerializer(user)
+        serializer = UserFullSerializer(user)
         return Response(serializer.data)
 
 
@@ -90,10 +91,42 @@ class UserListView(ListAPIView):
 
 class UserUpdateView(APIView):
     def put(self, request):
-        pass
+        user = get_user(request)
 
-    def patch(self, request):
+        first_name = request.data['first_name']
+        last_name = request.data['last_name']
+        username = request.data['username']
+        mobile = request.data['mobile']
+        national_code = request.data['national_code']
+        postal_code = request.data['postal_code']
+        address = request.data['address']
+
+        if first_name:
+            user.first_name = first_name
+        if last_name:
+            user.last_name = last_name
+        if username:
+            user.username = username
+        if mobile:
+            user.mobile = mobile
+        if national_code:
+            user.national_code = national_code
+        if postal_code:
+            user.postal_code = postal_code
+        if address:
+            user.address = address
+
+        user.save()
+
+        user_ser = UserFullSerializer(user)
+        return Response(user_ser.data)
+
+
+def patch(self, request):
+    serializer = UserMiniSerializer(data=request.data)
+    if serializer.is_valid():
         pass
+    return Response()
 
 
 class UserDeleteView(APIView):
