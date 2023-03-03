@@ -1,8 +1,6 @@
 import datetime
 import jwt
-from django.http import HttpResponseRedirect
-from django.shortcuts import redirect
-from django.urls import reverse
+
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -88,6 +86,23 @@ class UserView(APIView):
 class UserListView(ListAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+
+
+class UserUpdateView(APIView):
+    def put(self, request):
+        pass
+
+    def patch(self, request):
+        pass
+
+
+class UserDeleteView(APIView):
+    def delete(self, request):
+        user = get_user(request)
+        user.delete()
+
+        response = {'detail': 'User deleted successfully!'}
+        return Response(response)
 
 
 def get_user(request):
