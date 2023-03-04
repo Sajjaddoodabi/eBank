@@ -1,4 +1,6 @@
 import datetime
+import random
+
 import jwt
 
 from rest_framework.exceptions import AuthenticationFailed
@@ -170,9 +172,9 @@ class ChangePasswordView(APIView):
         if serializer.is_valid():
             user = get_user(request)
 
-            password = serializer.data['current_password']
-            new_password = serializer.data['new_password']
-            confirm_password = serializer.data['confirm_password']
+            password = request.data['current_password']
+            new_password = request.data['new_password']
+            confirm_password = request.data['confirm_password']
 
             if not user.check_password(password):
                 response = {'detail': 'current password is wrong!'}
@@ -204,7 +206,11 @@ class ResetPasswordView(APIView):
                 response = {'detail': 'code is invalid!'}
                 return Response(response)
 
-            response = {'detail': 'password reset successfully!'}
+            password = random.randint(a=10000, b=100000)
+            user.set_password(str(password))
+            user.save()
+
+            response = {'detail': f'password set to {password} !'}
             return Response(response)
 
         return Response(serializer.errors)
