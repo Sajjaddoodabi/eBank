@@ -1,7 +1,8 @@
 from django.urls import path
 
 from .views import CreateAccountView, AccountDetailView, AccountListView, ChangeAccountActivation, \
-    ChangeAccountApproval, AccountTypeList, AccountTypeDetail, ChangeAccountTypeActivation, CreateAccountTypeView, CreateCardView
+    ChangeAccountApproval, AccountTypeList, AccountTypeDetail, ChangeAccountTypeActivation, CreateAccountTypeView, \
+    CreateCardView, ChangeCardActivation, ChangeCardBanStatus
 
 urlpatterns = [
     path('me/add-account/', CreateAccountView.as_view(), name='add_account'),
@@ -9,7 +10,9 @@ urlpatterns = [
     path('me/detail/', AccountDetailView.as_view(), name='account_detail'),
     path('me/change-activation/', ChangeAccountActivation.as_view(), name='change_activation'),
     path('me/change-approva/', ChangeAccountApproval.as_view(), name='change_approval'),
-    path('me/add-card/', CreateCardView.as_view(), name='add_card'),
+    path('me/card/add-card/', CreateCardView.as_view(), name='add_card'),
+    path('me/card/change-activation/', ChangeCardActivation.as_view(), name='change_card_activation'),
+    path('me/card/change-ban-status/', ChangeCardBanStatus.as_view(), name='change_card_ban_status'),
     path('account-type/add-account-type/', CreateAccountTypeView.as_view(), name='add_account_type'),
     path('account-type/list/', AccountTypeList.as_view(), name='account_type_list'),
     path('account-type/detail/<int:pk>', AccountTypeDetail.as_view(), name='account_type_detail'),
