@@ -1,9 +1,12 @@
+import datetime
+import random
+
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView, UpdateAPIView
 
-from bank_account.models import AccountType, Account
-from bank_account.serializers import AccountSerializer, AccountTypeSerializer
+from bank_account.models import AccountType, Account, Card
+from bank_account.serializers import AccountSerializer, AccountTypeSerializer, CardSerializer
 from users.views import get_user
 
 
@@ -19,7 +22,11 @@ class CreateAccountView(APIView):
                 response = {'detail': 'account type not found!'}
                 return Response(response)
 
-            account = Account.objects.create(user_id=user.id, type_id=account_type.id)
+            try:
+                account = Account.objects.create(user_id=user.id, type_id=account_type.id)
+            except Exception as e:
+                response = {'detail': str(e)}
+                return Response(response)
 
             acc_serializer = AccountSerializer(account)
             return Response(acc_serializer.data)
@@ -91,7 +98,11 @@ class CreateAccountTypeView(APIView):
         if serializer.is_valid():
             title = serializer.data['title']
 
-            acc_type = AccountType.objects.create(title=title)
+            try:
+                acc_type = AccountType.objects.create(title=title)
+            except Exception as e:
+                response = {'detail': str(e)}
+                return Response(response)
 
             type_serializer = AccountTypeSerializer(acc_type)
             return Response(type_serializer.data)
@@ -131,3 +142,45 @@ class ChangeAccountTypeActivation(APIView):
 
         response = {'detail': f'account type activations is {is_active}!'}
         return Response(response)
+
+
+class CreateCardView(APIView):
+    def post(self, request):
+        serializer = CardSerializer(data=request.data)
+        if serializer.is_valid():
+            user = get_user(request)
+
+            account = Account.objects.filter(user_id=user.id).first()
+            if not account:
+                response = {'detail': 'account not found!'}
+                return Response(response)
+
+            card_number = generate_card_number()
+            cvv2 = str(random.randint(1000, 10000))
+            expire_date = datetime.date.today()
+            expire_date = expire_date.month + 45
+
+            while True:
+                if not Card.objects.filter(card_number=card_number).exists():
+                    break
+                card_number = generate_card_number()
+
+            try:
+                card = Card.objects.create(account=account, card_number=card_number, cvv2=cvv2, expire_date=expire_date)
+            except Exception as e:
+                response = {'detail': str(e)}
+                return Response(response)
+
+            card_serializer = CardSerializer(card)
+            return Response(card_serializer.data)
+
+        return Response(serializer.errors)
+
+
+def generate_card_number():
+    card_number = '8569' + \
+                  str(random.randint(1000, 10000)) + \
+                  str(random.randint(1000, 10000)) + \
+                  str(random.randint(1000, 10000))
+
+    return card_number

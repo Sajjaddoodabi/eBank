@@ -24,10 +24,10 @@ class Account(models.Model):
 
 class Card(models.Model):
     account = models.OneToOneField(Account, on_delete=models.CASCADE, related_name='card')
-    card_number = models.CharField(max_length=16)
+    card_number = models.CharField(max_length=16, unique=True)
     cvv2 = models.CharField(max_length=4)
     created_date = models.DateField(auto_now_add=True)
-    expire_date = models.DateField()
+    expire_date = models.DateField(null=True, blank=True)
     is_active = models.BooleanField(default=False)
     is_ban = models.BooleanField(default=False)
 
