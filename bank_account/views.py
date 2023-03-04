@@ -184,3 +184,33 @@ def generate_card_number():
                   str(random.randint(1000, 10000))
 
     return card_number
+
+
+class ChangeCardActivation(APIView):
+    def patch(self, request, pk):
+        card = Card.objects.filter(pk=pk).first()
+        is_active = request.data['is_active']
+        if not card:
+            response = {'detail': 'card not found!'}
+            return Response(response)
+
+        card.is_active = is_active
+        card.save()
+
+        response = {'detail': f'card activations is {is_active}!'}
+        return Response(response)
+
+
+class ChangeCardBanStatus(APIView):
+    def patch(self, request, pk):
+        card = Card.objects.filter(pk=pk).first()
+        is_ban = request.data['is_ban']
+        if not card:
+            response = {'detail': 'card not found!'}
+            return Response(response)
+
+        card.is_ban = is_ban
+        card.save()
+
+        response = {'detail': f'card activations is {is_ban}!'}
+        return Response(response)
