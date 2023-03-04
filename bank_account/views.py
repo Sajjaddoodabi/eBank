@@ -146,35 +146,31 @@ class ChangeAccountTypeActivation(APIView):
 
 class CreateCardView(APIView):
     def post(self, request):
-        serializer = CardSerializer(data=request.data)
-        if serializer.is_valid():
-            user = get_user(request)
+        user = get_user(request)
 
-            account = Account.objects.filter(user_id=user.id).first()
-            if not account:
-                response = {'detail': 'account not found!'}
-                return Response(response)
+        account = Account.objects.filter(user_id=user.id).first()
+        if not account:
+            response = {'detail': 'account not found!'}
+            return Response(response)
 
+        card_number = generate_card_number()
+        cvv2 = str(random.randint(1000, 10000))
+        expire_date = datetime.date.today()
+        expire_date = expire_date.month + 45
+
+        while True:
+            if not Card.objects.filter(card_number=card_number).exists():
+                break
             card_number = generate_card_number()
-            cvv2 = str(random.randint(1000, 10000))
-            expire_date = datetime.date.today()
-            expire_date = expire_date.month + 45
 
-            while True:
-                if not Card.objects.filter(card_number=card_number).exists():
-                    break
-                card_number = generate_card_number()
+        try:
+            card = Card.objects.create(account=account, card_number=card_number, cvv2=cvv2, expire_date=expire_date)
+        except Exception as e:
+            response = {'detail': str(e)}
+            return Response(response)
 
-            try:
-                card = Card.objects.create(account=account, card_number=card_number, cvv2=cvv2, expire_date=expire_date)
-            except Exception as e:
-                response = {'detail': str(e)}
-                return Response(response)
-
-            card_serializer = CardSerializer(card)
-            return Response(card_serializer.data)
-
-        return Response(serializer.errors)
+        card_serializer = CardSerializer(card)
+        return Response(card_serializer.data)
 
 
 def generate_card_number():
@@ -184,6 +180,35 @@ def generate_card_number():
                   str(random.randint(1000, 10000))
 
     return card_number
+
+
+class CardRenewal(APIView):
+    def post(self, request):
+        user = get_user(request)
+
+        card = Card.objects.filter(account__user_id=user.id).first()
+        if not card:
+            response = {'detail': 'card not found!'}
+            return Response(response)
+        if card.expire_date < datetime.date.today():
+            response = {'detail': 'u cant renew card until expire date'}
+            return Response(response)
+
+        card.delete()
+
+        cvv2 = str(random.randint(1000, 10000))
+        expire_date = datetime.date.today()
+        expire_date = expire_date.month + 45
+
+        try:
+            new_card = Card.objects.create(account=user.account, card_number=card.card_number, cvv2=cvv2,
+                                           expire_date=expire_date)
+        except Exception as e:
+            response = {'detail': str(e)}
+            return Response(response)
+
+        card_serializer = CardSerializer(new_card)
+        return Response(card_serializer.data)
 
 
 class ChangeCardActivation(APIView):
