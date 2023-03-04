@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'jwt',
 
     'users',
+    'bank_account',
 ]
 
 MIDDLEWARE = [

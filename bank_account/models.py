@@ -13,7 +13,7 @@ class AccountType(models.Model):
 
 class Account(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='account')
-    type = models.ForeignKey(AccountType, on_delete=models.RESTRICT)
+    type = models.ForeignKey(AccountType, on_delete=models.RESTRICT, related_name='account_type')
     is_active = models.BooleanField(default=False)
     is_approved = models.BooleanField(default=False)
 
