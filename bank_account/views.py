@@ -182,7 +182,7 @@ def generate_card_number():
     return card_number
 
 
-class CardRenewal(APIView):
+class CardRenewalView(APIView):
     def post(self, request):
         user = get_user(request)
 
