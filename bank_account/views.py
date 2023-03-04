@@ -84,3 +84,16 @@ class ChangeAccountApproval(APIView):
         response = {'detail': f'account approve is {is_approved}!'}
         return Response(response)
 
+
+class CreateAccountTypeView(APIView):
+    def post(self, request):
+        serializer = AccountTypeSerializer(data=request.data)
+        if serializer.is_valid():
+            title = serializer.data['title']
+
+            acc_type = AccountType.objects.create(title=title)
+
+            type_serializer = AccountTypeSerializer(acc_type)
+            return Response(type_serializer.data)
+
+        return Response(serializer.data)
