@@ -4,7 +4,7 @@ from users.models import User
 
 
 class AccountType(models.Model):
-    title = models.CharField(max_length=50)
+    title = models.CharField(max_length=50, unique=True)
     is_active = models.BooleanField(default=False)
 
     def __str__(self):
@@ -14,6 +14,7 @@ class AccountType(models.Model):
 class Account(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='account')
     type = models.ForeignKey(AccountType, on_delete=models.RESTRICT, related_name='account_type')
+    balance = models.PositiveIntegerField(default=0)
     is_active = models.BooleanField(default=False)
     is_approved = models.BooleanField(default=False)
 

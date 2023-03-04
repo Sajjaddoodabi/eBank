@@ -17,8 +17,8 @@ class AccountSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Account
-        read_only_fields = ('is_active', 'is_approved')
-        fields = ['id', 'user', 'account_type', 'is_active', 'is_approved']
+        read_only_fields = ('balance', 'is_active', 'is_approved')
+        fields = ['id', 'user', 'account_type', 'balance', 'is_active', 'is_approved']
 
 
 class CardSerializer(serializers.ModelSerializer):
