@@ -1,6 +1,6 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListAPIView, UpdateAPIView
 
 from bank_account.models import AccountType, Account
 from bank_account.serializers import AccountSerializer, AccountTypeSerializer
@@ -96,4 +96,23 @@ class CreateAccountTypeView(APIView):
             type_serializer = AccountTypeSerializer(acc_type)
             return Response(type_serializer.data)
 
+        return Response(serializer.data)
+
+
+class AccountTypeList(ListAPIView):
+    queryset = AccountType.objects.all()
+    serializer_class = AccountTypeSerializer
+
+
+class AccountTypeDetail(APIView):
+    def put(self, request, pk):
+        acc_type = AccountType.objects.filter(pk=pk).first()
+        if not acc_type:
+            response = {'detail': 'account type not found!'}
+            return Response(response)
+
+        acc_type.title = request.data['title']
+        acc_type.save()
+
+        serializer = AccountTypeSerializer(acc_type)
         return Response(serializer.data)
