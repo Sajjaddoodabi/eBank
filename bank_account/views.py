@@ -116,3 +116,18 @@ class AccountTypeDetail(APIView):
 
         serializer = AccountTypeSerializer(acc_type)
         return Response(serializer.data)
+
+
+class ChangeAccountTypeActivation(APIView):
+    def patch(self, request, pk):
+        acc_type = AccountType.objects.filter(pk=pk).first()
+        is_active = request.data['is_active']
+        if not acc_type:
+            response = {'detail': 'account type not found!'}
+            return Response(response)
+
+        acc_type.is_active = is_active
+        acc_type.save()
+
+        response = {'detail': f'account type activations is {is_active}!'}
+        return Response(response)

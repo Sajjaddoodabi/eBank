@@ -1,7 +1,7 @@
 from django.urls import path
 
 from .views import CreateAccountView, AccountDetailView, AccountListView, ChangeAccountActivation, \
-    ChangeAccountApproval, AccountTypeList, AccountTypeDetail
+    ChangeAccountApproval, AccountTypeList, AccountTypeDetail, ChangeAccountTypeActivation
 
 urlpatterns = [
     path('me/add-account/', CreateAccountView.as_view(), name='add_account'),
@@ -12,4 +12,5 @@ urlpatterns = [
     path('account-type/add-account-type/', AccountDetailView.as_view(), name='add_account_type'),
     path('account-type/list/', AccountTypeList.as_view(), name='account_type_list'),
     path('account-type/detail/<int:pk>', AccountTypeDetail.as_view(), name='account_type_detail'),
+    path('account-type/detail/change-activation/<int:pk>', ChangeAccountTypeActivation.as_view(), name='account_type_activation'),
 ]
