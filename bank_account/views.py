@@ -15,7 +15,7 @@ class CreateAccountView(APIView):
         serializer = AccountSerializer(data=request.data)
         if serializer.is_valid():
             user = get_user(request)
-            acc_type = serializer.data['account_type']
+            acc_type = request.data['account_type']
 
             account_type = AccountType.objects.filter(title=acc_type).first()
             if not account_type:
@@ -35,10 +35,8 @@ class CreateAccountView(APIView):
 
 
 class AccountDetailView(APIView):
-    def get(self, request):
-        user = get_user(request)
-
-        account = Account.objects.filter(user_id=user.id).first()
+    def get(self, request, pk):
+        account = Account.objects.filter(pk=pk).first()
         if not account:
             response = {'detail': 'account not found!'}
             return Response(response)
@@ -46,13 +44,11 @@ class AccountDetailView(APIView):
         serializer = AccountSerializer(account)
         return Response(serializer.data)
 
-    def put(self, request):
+    def put(self, request, pk):
         pass
 
-    def delete(self, request):
-        user = get_user(request)
-
-        account = Account.objects.filter(user_id=user.id).first()
+    def delete(self, request, pk):
+        account = Account.objects.filter(pk=pk).first()
         if not account:
             response = {'detail': 'account not found!'}
             return Response(response)
@@ -156,7 +152,7 @@ class CreateCardView(APIView):
         card_number = generate_card_number()
         cvv2 = str(random.randint(1000, 10000))
         expire_date = datetime.date.today()
-        expire_date = expire_date.month + 45
+        expire_date = datetime.date(year=expire_date.year + 3, month=expire_date.month + 4, day=expire_date.day)
 
         while True:
             if not Card.objects.filter(card_number=card_number).exists():
@@ -174,9 +170,9 @@ class CreateCardView(APIView):
 
 
 def generate_card_number():
-    card_number = '8569' + \
-                  str(random.randint(1000, 10000)) + \
-                  str(random.randint(1000, 10000)) + \
+    card_number = '8569' + ' ' + \
+                  str(random.randint(1000, 10000)) + ' ' + \
+                  str(random.randint(1000, 10000)) + ' ' + \
                   str(random.randint(1000, 10000))
 
     return card_number
@@ -209,6 +205,36 @@ class CardRenewalView(APIView):
 
         card_serializer = CardSerializer(new_card)
         return Response(card_serializer.data)
+
+
+class CardListView(ListAPIView):
+    queryset = Card.objects.all()
+    serializer_class = CardSerializer
+
+
+class CardDetailView(APIView):
+    def get(self, request, pk):
+        card = Card.objects.filter(pk=pk).first()
+        if not card:
+            response = {'detail': 'card not found!'}
+            return Response(response)
+
+        serializer = CardSerializer(card)
+        return Response(serializer.data)
+
+    def put(self, request, pk):
+        pass
+
+    def delete(self, request, pk):
+        card = Card.objects.filter(pk=pk).first()
+        if not card:
+            response = {'detail': 'card not found!'}
+            return Response(response)
+
+        card.delete()
+
+        response = {'detail': 'card deleted successfully!'}
+        return Response(response)
 
 
 class ChangeCardActivation(APIView):
