@@ -59,3 +59,28 @@ class AccountDetailView(APIView):
 class AccountListView(ListAPIView):
     queryset = Account.objects.all()
     serializer_class = AccountSerializer
+
+
+class ChangeAccountActivation(APIView):
+    def patch(self, request):
+        user = get_user(request)
+        is_active = request.data['is_active']
+
+        user.is_active = is_active
+        user.save()
+
+        response = {'detail': f'account activation is {is_active}!'}
+        return Response(response)
+
+
+class ChangeAccountApproval(APIView):
+    def patch(self, request):
+        user = get_user(request)
+        is_approved = request.data['is_approved']
+
+        user.is_approved = is_approved
+        user.save()
+
+        response = {'detail': f'account approve is {is_approved}!'}
+        return Response(response)
+
