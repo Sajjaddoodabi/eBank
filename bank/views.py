@@ -1,9 +1,10 @@
 from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.generics import ListAPIView
 
 from bank.models import TransactionDestinationUser
-from bank.serializers import TransactionDestinationUserSerializer
+from bank.serializers import TransactionDestinationUserSerializer, TransactionDestinationChangeValidationSerializer
 from users.views import get_user
 
 
@@ -12,7 +13,7 @@ class CreateTransactionDestinationView(APIView):
         serializer = TransactionDestinationUserSerializer(data=request.data)
         if serializer.is_valid():
             user = get_user(request)
-            destination_user = serializer.data['destination_user']
+            destination_user = serializer.data['destination_name']
             card_number = serializer.data['card_number']
 
             if not user.account or not user.account.card:
@@ -34,3 +35,93 @@ class CreateTransactionDestinationView(APIView):
 
         return Response(serializer.errors)
 
+
+class TransactionDestinationListAll(ListAPIView):
+    queryset = TransactionDestinationUser.objects.all()
+    serializer_class = TransactionDestinationUserSerializer
+
+
+class TransactionDestinationList(ListAPIView):
+    queryset = TransactionDestinationUser.objects.all()
+    serializer_class = TransactionDestinationUserSerializer
+
+    def get_queryset(self):
+        user = get_user(self.request)
+        return TransactionDestinationUser.objects.filter(user_id=user.id)
+
+
+class TransactionDestinationDetailView(APIView):
+    def get(self, request, pk):
+        user = get_user(request)
+        destination = TransactionDestinationUser.objects.filter(pk=pk, user_id=user.id).first()
+
+        if not destination:
+            response = {'detail': 'destination not found!'}
+            return Response(response)
+
+        serializer = TransactionDestinationUserSerializer(destination)
+        return Response(serializer.data)
+
+    def put(self, request, pk):
+        pass
+
+    def delete(self, request, pk):
+        user = get_user(request)
+        destination = TransactionDestinationUser.objects.filter(pk=pk, user_id=user.id).first()
+
+        if not destination:
+            response = {'detail': 'destination not found!'}
+            return Response(response)
+
+        destination.delete()
+
+        response = {'detail': 'destination deleted successfully!'}
+        return Response(response)
+
+
+class ChangeTransactionDestinationActivation(APIView):
+    def post(self, request, pk):
+        serializer = TransactionDestinationChangeValidationSerializer(request.data)
+        user = get_user(request)
+        destination = TransactionDestinationUser.objects.filter(pk=pk, user_id=user.id).first()
+
+        if not destination:
+            response = {'detail': 'destination not found!'}
+            return Response(response)
+
+        is_active = serializer.data['is_active']
+
+        if is_active == 'True' or is_active == 'true':
+            is_active = True
+        elif is_active == 'False' or is_active == 'false':
+            is_active = False
+
+        destination.is_active = is_active
+        destination.save()
+
+        response = {'detail': f'destination activation is {is_active}!'}
+        return Response(response)
+
+
+class ChangeTransactionDestinationValidation(APIView):
+    def post(self, request, pk):
+        serializer = TransactionDestinationChangeValidationSerializer(request.data)
+        user = get_user(request)
+        destination = TransactionDestinationUser.objects.filter(pk=pk, user_id=user.id).first()
+
+        if not destination:
+            response = {'detail': 'destination not found!'}
+            return Response(response)
+
+        is_valid = serializer.data['is_valid']
+
+        if is_valid == 'True' or is_valid == 'true':
+            is_valid = True
+        elif is_valid == 'False' or is_valid == 'false':
+            is_valid = False
+
+        destination.is_valid = is_valid
+        destination.save()
+
+        response = {'detail': f'destination activation is {is_valid}!'}
+        return Response(response)

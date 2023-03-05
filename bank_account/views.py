@@ -17,7 +17,7 @@ class CreateAccountView(APIView):
             user = get_user(request)
             acc_type = request.data['account_type']
 
-            account_type = AccountType.objects.filter(title=acc_type).first()
+            account_type = AccountType.objects.filter(title=acc_type, is_active=True).first()
             if not account_type:
                 response = {'detail': 'account type not found!'}
                 return Response(response)
@@ -77,24 +77,44 @@ class AccountListView(ListAPIView):
 
 
 class ChangeAccountActivation(APIView):
-    def patch(self, request):
+    def post(self, request):
         user = get_user(request)
         is_active = request.data['is_active']
 
-        user.is_active = is_active
-        user.save()
+        account = Account.objects.filter(user_id=user.id).first()
+        if not account:
+            response = {'detail': 'account not found!'}
+            return Response(response)
+
+        if is_active == 'True' or is_active == 'true':
+            is_active = True
+        elif is_active == 'False' or is_active == 'false':
+            is_active = False
+
+        account.is_active = is_active
+        account.save()
 
         response = {'detail': f'account activation is {is_active}!'}
         return Response(response)
 
 
 class ChangeAccountApproval(APIView):
-    def patch(self, request):
+    def post(self, request):
         user = get_user(request)
         is_approved = request.data['is_approved']
 
-        user.is_approved = is_approved
-        user.save()
+        account = Account.objects.filter(user_id=user.id).first()
+        if not account:
+            response = {'detail': 'account not found!'}
+            return Response(response)
+
+        if is_approved == 'True' or is_approved == 'true':
+            is_approved = True
+        elif is_approved == 'False' or is_approved == 'false':
+            is_approved = False
+
+        account.is_approved = is_approved
+        account.save()
 
         response = {'detail': f'account approve is {is_approved}!'}
         return Response(response)
@@ -115,7 +135,7 @@ class CreateAccountTypeView(APIView):
             type_serializer = AccountTypeSerializer(acc_type)
             return Response(type_serializer.data)
 
-        return Response(serializer.data)
+        return Response(serializer.errors)
 
 
 class AccountTypeList(ListAPIView):
@@ -138,12 +158,17 @@ class AccountTypeDetail(APIView):
 
 
 class ChangeAccountTypeActivation(APIView):
-    def patch(self, request, pk):
+    def post(self, request, pk):
         acc_type = AccountType.objects.filter(pk=pk).first()
         is_active = request.data['is_active']
         if not acc_type:
             response = {'detail': 'account type not found!'}
             return Response(response)
+
+        if is_active == 'True' or is_active == 'true':
+            is_active = True
+        elif is_active == 'False' or is_active == 'false':
+            is_active = False
 
         acc_type.is_active = is_active
         acc_type.save()
@@ -156,7 +181,7 @@ class CreateCardView(APIView):
     def post(self, request):
         user = get_user(request)
 
-        account = Account.objects.filter(user_id=user.id).first()
+        account = Account.objects.filter(user_id=user.id, is_active=True, is_approved=True).first()
         if not account:
             response = {'detail': 'account not found!'}
             return Response(response)
@@ -194,7 +219,7 @@ class CardRenewalView(APIView):
     def post(self, request):
         user = get_user(request)
 
-        card = Card.objects.filter(account__user_id=user.id).first()
+        card = Card.objects.filter(account__user_id=user.id, is_active=True, is_ban=False).first()
         if not card:
             response = {'detail': 'card not found!'}
             return Response(response)
@@ -250,12 +275,17 @@ class CardDetailView(APIView):
 
 
 class ChangeCardActivation(APIView):
-    def patch(self, request, pk):
+    def post(self, request, pk):
         card = Card.objects.filter(pk=pk).first()
         is_active = request.data['is_active']
         if not card:
             response = {'detail': 'card not found!'}
             return Response(response)
+
+        if is_active == 'True' or is_active == 'true':
+            is_active = True
+        elif is_active == 'False' or is_active == 'false':
+            is_active = False
 
         card.is_active = is_active
         card.save()
@@ -265,12 +295,17 @@ class ChangeCardActivation(APIView):
 
 
 class ChangeCardBanStatus(APIView):
-    def patch(self, request, pk):
+    def post(self, request, pk):
         card = Card.objects.filter(pk=pk).first()
         is_ban = request.data['is_ban']
         if not card:
             response = {'detail': 'card not found!'}
             return Response(response)
+
+        if is_ban == 'True' or is_ban == 'true':
+            is_ban = True
+        elif is_ban == 'False' or is_ban == 'false':
+            is_ban = False
 
         card.is_ban = is_ban
         card.save()

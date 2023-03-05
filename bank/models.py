@@ -20,7 +20,7 @@ class TransactionWay(models.Model):
 
 
 class TransactionDestinationUser(models.Model):
-    user = models.ManyToManyField(User, related_name='transaction_destination')
+    user = models.ForeignKey(User, on_delete=models.CASCADE , related_name='transaction_destination')
     destination_name = models.CharField(max_length=100)
     card_number = models.CharField(max_length=19, unique=True)
     is_active = models.BooleanField(default=False)

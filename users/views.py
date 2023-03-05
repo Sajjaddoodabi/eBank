@@ -16,6 +16,7 @@ from users.serializers import UserSerializer, ChangePasswordSerializer, ResetPas
 class RegisterView(APIView):
     def post(self, request):
         try:
+            birth_date = request.data['birth_date']
             firstname = request.data['first_name']
             lastname = request.data['last_name']
             mobile = request.data['mobile']
@@ -26,6 +27,7 @@ class RegisterView(APIView):
             return Response(response)
         try:
             user = User.objects.create_user(
+                birth_date=birth_date,
                 first_name=firstname,
                 last_name=lastname,
                 username=username,
