@@ -20,13 +20,13 @@ class TransactionWay(models.Model):
 
 
 class TransactionDestinationUser(models.Model):
-    user = models.CharField(max_length=100)
-    card_number = models.CharField(max_length=19)
+    destination_user = models.CharField(max_length=100)
+    card_number = models.CharField(max_length=19, unique=True)
     is_active = models.BooleanField(default=False)
     is_valid = models.BooleanField(default=False)
 
     def __str__(self):
-        return f'{self.user} - {self.card_number}'
+        return f'{self.destination_user} - {self.card_number}'
 
 
 class Transaction(models.Model):
