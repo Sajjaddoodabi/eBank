@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from bank.models import TransactionType, TransactionDestinationUser, TransactionWay
+from users.serializers import UserSerializer
 
 
 class TransactionTypeSerializer(serializers.ModelSerializer):
@@ -18,10 +19,12 @@ class TransactionWaySerializer(serializers.ModelSerializer):
 
 
 class TransactionDestinationUserSerializer(serializers.ModelSerializer):
+    user = serializers.CharField(source='user.get_full_name()')
+
     class Meta:
         model = TransactionDestinationUser
         read_only_fields = ('is_active', 'is_valid')
-        fields = ['id', 'destination_user', 'card_number', 'is_active', 'is_valid']
+        fields = ['id', 'user', 'destination_user', 'card_number', 'is_active', 'is_valid']
 
 
 class TransactionSerializer(serializers.ModelSerializer):

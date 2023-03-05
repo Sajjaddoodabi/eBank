@@ -20,7 +20,8 @@ class TransactionWay(models.Model):
 
 
 class TransactionDestinationUser(models.Model):
-    destination_user = models.CharField(max_length=100)
+    user = models.ManyToManyField(User, related_name='transaction_destination')
+    destination_name = models.CharField(max_length=100)
     card_number = models.CharField(max_length=19, unique=True)
     is_active = models.BooleanField(default=False)
     is_valid = models.BooleanField(default=False)
