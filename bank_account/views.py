@@ -22,9 +22,9 @@ class CreateAccountView(APIView):
                 response = {'detail': 'account type not found!'}
                 return Response(response)
 
-            check_age = check_birth_date(user)
+            check_age = check_user_age(user)
 
-            if not check_age:
+            if check_age < 18:
                 response = {'detail': 'People under 18 cant create account!'}
                 return Response(response)
 
@@ -40,13 +40,10 @@ class CreateAccountView(APIView):
         return Response(serializer.errors)
 
 
-def check_birth_date(user):
+def check_user_age(user):
     age = datetime.date.today().year - user.birth_date.year
 
-    if age < 18:
-        return False
-
-    return True
+    return age
 
 
 class AccountDetailView(APIView):
