@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView
 
 from bank.models import TransactionDestinationUser, TransactionType
 from bank.serializers import TransactionDestinationUserSerializer, TransactionDestinationChangeValidationSerializer, \
@@ -157,3 +157,22 @@ class TransactionTypeListView(ListAPIView):
 
     def get_queryset(self):
         return TransactionType.objects.filter(is_active=True)
+
+
+class TransactionDetailView(RetrieveUpdateDestroyAPIView):
+    serializer_class = TransactionTypeSerializer
+    queryset = TransactionType.objects.all()
+
+    def update(self, request, *args, **kwargs):
+        tran_type = TransactionType.objects.filter(pk=kwargs.get('pk')).first()
+        title = request.data['title']
+
+        if not tran_type:
+            response = {'detail': 'type not found!'}
+            return Response(response)
+
+        tran_type.title = title
+        tran_type.save()
+
+        serializer = TransactionTypeSerializer(tran_type)
+        return Response(serializer.data)
