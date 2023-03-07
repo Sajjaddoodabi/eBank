@@ -10,7 +10,7 @@ from rest_framework.generics import ListAPIView
 
 from users.models import User
 from users.serializers import UserSerializer, ChangePasswordSerializer, ResetPasswordSerializer, UserMiniSerializer, \
-    UserFullSerializer
+    UserFullSerializer, UserActivationSerializer, UserApprovalSerializer
 
 
 class RegisterView(APIView):
@@ -146,26 +146,54 @@ def get_user(request):
     return user
 
 
-class ApproveUser(APIView):
-    def post(self, request):
-        user = get_user(request)
+class ChangeUserApprovalView(APIView):
+    def post(self, request, pk):
+        serializer = UserApprovalSerializer(data=request.data)
+        if serializer.is_valid():
+            user = User.objects.filter(pk=pk).first()
+            is_approved = serializer.data['is_approved']
 
-        user.is_approved = True
-        user.save()
+            if not user:
+                response = {'detail': 'User NOT found!'}
+                return Response(response)
 
-        response = {'detail': 'User has been approved!'}
-        return Response(response)
+            if is_approved == 'True' or is_approved == 'true':
+                is_approved = True
+            elif is_approved == 'False' or is_approved == 'false':
+                is_approved = False
+
+            user.is_approved = is_approved
+            user.save()
+
+            response = {'detail': f'User approval changed to {is_approved}!'}
+            return Response(response)
+
+        return Response(serializer.errors)
 
 
-class ActiveUser(APIView):
-    def post(self, request):
-        user = get_user(request)
+class ChangeUserActivationView(APIView):
+    def post(self, request, pk):
+        serializer = UserActivationSerializer(data=request.data)
+        if serializer.is_valid():
+            user = User.objects.filter(pk=pk).first()
+            is_active = serializer.data['is_active']
 
-        user.is_active = True
-        user.save()
+            if not user:
+                response = {'detail': 'User NOT found!'}
+                return Response(response)
 
-        response = {'detail': 'User has been activated!'}
-        return Response(response)
+            if is_active == 'True' or is_active == 'true':
+                is_active = True
+            elif is_active == 'False' or is_active == 'false':
+                is_active = False
+
+            user.is_active = is_active
+            user.save()
+
+            response = {'detail': f'User approval changed to {is_active}!'}
+            return Response(response)
+
+        return Response(serializer.errors)
 
 
 class ChangePasswordView(APIView):

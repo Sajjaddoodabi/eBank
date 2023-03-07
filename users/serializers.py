@@ -27,6 +27,18 @@ class UserMiniSerializer(serializers.ModelSerializer):
         fields = ['id', 'first_name', 'last_name', 'username', 'mobile', 'is_approved', 'is_active']
 
 
+class UserActivationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['is_active']
+
+
+class UserApprovalSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['is_approved']
+
+
 class ChangePasswordSerializer(serializers.ModelSerializer):
     current_password = serializers.CharField(
         required=True,
