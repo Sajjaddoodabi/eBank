@@ -3,8 +3,9 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
 
-from bank.models import TransactionDestinationUser
-from bank.serializers import TransactionDestinationUserSerializer, TransactionDestinationChangeValidationSerializer
+from bank.models import TransactionDestinationUser, TransactionType
+from bank.serializers import TransactionDestinationUserSerializer, TransactionDestinationChangeValidationSerializer, \
+    TransactionTypeSerializer
 from users.views import get_user
 
 
@@ -125,3 +126,26 @@ class ChangeTransactionDestinationValidation(APIView):
 
         response = {'detail': f'destination activation is {is_valid}!'}
         return Response(response)
+
+
+class CreateTransactionTypeView(APIView):
+    def post(self, request):
+        serializer = TransactionTypeSerializer(data=request.data)
+        if serializer.is_valid():
+            title = serializer.data['title']
+            tran_type = TransactionType.objects.filter(title=title).first()
+
+            if not tran_type:
+                response = {'detail': 'type not found!'}
+                return Response(response)
+
+            try:
+                transaction_type = TransactionType.objects.create(title=title)
+            except Exception as e:
+                response = {'detail': str(e)}
+                return Response(response)
+
+            tran_serializer = TransactionTypeSerializer(transaction_type)
+            return Response(tran_serializer.data)
+
+        return Response(serializer.errors)
