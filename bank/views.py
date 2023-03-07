@@ -5,7 +5,7 @@ from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView
 
 from bank.models import TransactionDestinationUser, TransactionType
 from bank.serializers import TransactionDestinationUserSerializer, TransactionDestinationChangeValidationSerializer, \
-    TransactionTypeSerializer
+    TransactionTypeSerializer, TransactionTypeChangeActivationSerializer
 from users.views import get_user
 
 
@@ -176,3 +176,27 @@ class TransactionDetailView(RetrieveUpdateDestroyAPIView):
 
         serializer = TransactionTypeSerializer(tran_type)
         return Response(serializer.data)
+
+
+class ChangeTransactionTypeActivation(APIView):
+    def post(self, request, pk):
+        serializer = TransactionTypeChangeActivationSerializer(data=request.data)
+        if serializer.is_valid():
+            tran_type = TransactionType.objects.filter(pk=pk).first()
+            is_active = serializer.data['is_active']
+
+            if not tran_type:
+                response = {'detail': 'type not found!'}
+                return Response(response)
+
+            if is_active == 'True' or is_active == 'true':
+                tran_type.is_active = True
+            elif is_active == 'False' or is_active == 'false':
+                tran_type.is_active = False
+
+            tran_type.save()
+
+            response = {'detail': f'type activation changed into {is_active}!'}
+            return Response(response)
+
+        return Response(serializer.errors)
