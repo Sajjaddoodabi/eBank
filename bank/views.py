@@ -42,7 +42,12 @@ class TransactionDestinationListAll(ListAPIView):
     serializer_class = TransactionDestinationUserSerializer
 
 
-class TransactionDestinationList(ListAPIView):
+class TransactionDestinationAllList(ListAPIView):
+    queryset = TransactionDestinationUser.objects.all()
+    serializer_class = TransactionDestinationUserSerializer
+
+
+class TransactionDestinationActiveList(ListAPIView):
     queryset = TransactionDestinationUser.objects.all()
     serializer_class = TransactionDestinationUserSerializer
 
@@ -154,7 +159,12 @@ class CreateTransactionTypeView(APIView):
         return Response(serializer.errors)
 
 
-class TransactionTypeListView(ListAPIView):
+class TransactionTypeListAllView(ListAPIView):
+    queryset = TransactionType.objects.all()
+    serializer_class = TransactionTypeSerializer
+
+
+class TransactionTypeListActiveView(ListAPIView):
     queryset = TransactionType.objects.all()
     serializer_class = TransactionTypeSerializer
 
@@ -181,7 +191,7 @@ class TransactionTypeDetailView(RetrieveUpdateDestroyAPIView):
         return Response(serializer.data)
 
 
-class ChangeTransactionTypeActivation(APIView):
+class ChangeTransactionTypeActivationView(APIView):
     def post(self, request, pk):
         serializer = TransactionTypeChangeActivationSerializer(data=request.data)
         if serializer.is_valid():
@@ -248,12 +258,12 @@ class TransactionWayDetailView(RetrieveUpdateDestroyAPIView):
         return Response(serializer.data)
 
 
-class TransactionWayAllList(ListAPIView):
+class TransactionWayAllListView(ListAPIView):
     serializer_class = TransactionWaySerializer
     queryset = TransactionWay.objects.all()
 
 
-class TransactionWayActiveList(ListAPIView):
+class TransactionWayActiveListView(ListAPIView):
     serializer_class = TransactionWaySerializer
     queryset = TransactionWay.objects.all()
 
@@ -261,7 +271,7 @@ class TransactionWayActiveList(ListAPIView):
         return TransactionWay.objects.filter(is_active=True)
 
 
-class ChangeTransactionWayActivation(APIView):
+class ChangeTransactionWayActivationView(APIView):
     def post(self, request, pk):
         serializer = TransactionWaySerializer(data=request.data)
         if serializer.is_valid():
