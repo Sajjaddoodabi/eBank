@@ -56,9 +56,9 @@ class TransactionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Transaction
-        read_only_fields = ('is_done', 'is_fail', 'reference_number', 'created_at', 'done_at')
+        read_only_fields = ('is_done', 'is_fail', 'reference_number', 'created_at', 'finish_at')
         fields = ['id', 'user', 'destination_user', 'transaction_type', 'amount', 'reference_number', 'created_at',
-                  'done_at', 'is_done', 'is_fail']
+                  'finish_at', 'is_done', 'is_fail']
 
 
 class TransactionChangeDoneSerializer(serializers.ModelSerializer):

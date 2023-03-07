@@ -3,9 +3,11 @@ from .views import CreateTransactionDestinationView, TransactionDestinationListA
     ChangeTransactionDestinationActivationView, ChangeTransactionDestinationValidationView, TransactionDestinationDetailView, \
     CreateTransactionTypeView, TransactionTypeListAllView, TransactionTypeListActiveView, TransactionTypeDetailView, \
     ChangeTransactionTypeActivationView, CreateTransactionWayView, TransactionWayDetailView, TransactionWayAllListView, \
-    TransactionWayActiveListView, ChangeTransactionWayActivationView, TransactionDestinationActiveListView
+    TransactionWayActiveListView, ChangeTransactionWayActivationView, TransactionDestinationActiveListView, \
+    CreateTransactionView
 
 urlpatterns = [
+    path('me/transaction/create-transaction/', CreateTransactionView.as_view(), name='create_transaction'),
     path('me/destination/create-destination/', CreateTransactionDestinationView.as_view(), name='create_destination'),
     path('me/destination/list/', TransactionDestinationAllListView.as_view(), name='my_destination_list'),
     path('me/destination/detail/<int:pk>/', TransactionDestinationDetailView.as_view(), name='destination_detail'),

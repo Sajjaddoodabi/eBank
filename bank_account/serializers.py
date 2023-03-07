@@ -12,19 +12,19 @@ class AccountTypeSerializer(serializers.ModelSerializer):
 
 
 class AccountSerializer(serializers.ModelSerializer):
-    account = UserSerializer(read_only=True)
+    user = UserSerializer(read_only=True)
     account_type = AccountTypeSerializer(read_only=True)
 
     class Meta:
         model = Account
         read_only_fields = ('balance', 'is_active', 'is_approved')
-        fields = ['id', 'account', 'account_type', 'balance', 'is_active', 'is_approved']
+        fields = ['id', 'user', 'account_type', 'balance', 'is_active', 'is_approved']
 
 
 class CardSerializer(serializers.ModelSerializer):
-    card = AccountSerializer(read_only=True)
+    account = AccountSerializer(read_only=True)
 
     class Meta:
         model = Card
         read_only_fields = ('is_active', 'is_ban')
-        fields = ['id', 'card', 'card_number', 'cvv2', 'created_date', 'expire_date', 'is_active', 'is_ban']
+        fields = ['id', 'account', 'card_number', 'cvv2', 'created_date', 'expire_date', 'is_active', 'is_ban']

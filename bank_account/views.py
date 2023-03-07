@@ -221,7 +221,7 @@ class CreateCardView(APIView):
             card_number = generate_card_number()
 
         try:
-            card = Card.objects.create(account=account, card_number=card_number, cvv2=cvv2, expire_date=expire_date)
+            card = Card.objects.create(account_id=account.id, card_number=card_number, cvv2=cvv2, expire_date=expire_date)
         except Exception as e:
             response = {'detail': str(e)}
             return Response(response)

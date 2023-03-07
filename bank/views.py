@@ -1,16 +1,54 @@
+import random
+
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView
 
-from bank.models import TransactionDestinationUser, TransactionType, TransactionWay
+from bank.models import TransactionDestinationUser, TransactionType, TransactionWay, Transaction
 from bank.serializers import TransactionDestinationUserSerializer, TransactionDestinationChangeValidationSerializer, \
-    TransactionTypeSerializer, TransactionTypeChangeActivationSerializer, TransactionWaySerializer
+    TransactionTypeSerializer, TransactionTypeChangeActivationSerializer, TransactionWaySerializer, \
+    TransactionSerializer
 from users.views import get_user
 
 
 class CreateTransactionView(APIView):
     def post(self, request):
-        pass
+        serializer = TransactionSerializer(data=request.data)
+        if serializer.is_valid():
+            user = get_user(request)
+            destination = serializer.data['destination_user']
+            des_type = serializer.data['destination_type']
+            amount = serializer.data['amount']
+
+            destination_user = TransactionDestinationUser.objects.filter(card_number=destination).first()
+            destination_type = TransactionType.objects.filter(title=des_type).first()
+
+            if not destination_user:
+                response = {'detail': 'destination user is invalid!'}
+                return Response(response)
+
+            if not destination_type:
+                response = {'detail': 'destination type is invalid!'}
+                return Response(response)
+
+            reference_number = random.randint(10 ** 10, 10 ** 11)
+
+            try:
+                transaction = Transaction.objects.create(
+                    user_id=user.id,
+                    transaction_to=destination_user,
+                    type=destination_type,
+                    amount=amount,
+                    reference_number=reference_number
+                )
+            except Exception as e:
+                response = {'detail': str(e)}
+                return Response(response)
+
+            transaction_ser = TransactionSerializer(transaction)
+            return Response(transaction_ser.data)
+
+        return Response(serializer.errors)
 
 
 class CreateTransactionDestinationView(APIView):

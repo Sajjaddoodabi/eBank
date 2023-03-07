@@ -35,9 +35,9 @@ class Transaction(models.Model):
     transaction_to = models.ForeignKey(TransactionDestinationUser, on_delete=models.DO_NOTHING, related_name='destination_user')
     type = models.ForeignKey(TransactionType, on_delete=models.RESTRICT, related_name='transaction_type')
     amount = models.PositiveIntegerField(default=0)
-    reference_number = models.CharField(max_length=30)
+    reference_number = models.CharField(max_length=30, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    done_at = models.DateTimeField()
+    finish_at = models.DateTimeField(blank=True, null=True)
     is_done = models.BooleanField(default=False)
     is_fail = models.BooleanField(default=False)
 
