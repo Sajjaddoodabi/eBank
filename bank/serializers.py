@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from bank.models import TransactionType, TransactionDestinationUser, TransactionWay
+from bank.models import TransactionType, TransactionDestinationUser, TransactionWay, Transaction
 
 
 class TransactionTypeSerializer(serializers.ModelSerializer):
@@ -55,7 +55,19 @@ class TransactionSerializer(serializers.ModelSerializer):
     transaction_type = TransactionTypeSerializer(read_only=True)
 
     class Meta:
-        model = TransactionDestinationUser
+        model = Transaction
         read_only_fields = ('is_done', 'is_fail', 'reference_number', 'created_at', 'done_at')
         fields = ['id', 'user', 'destination_user', 'transaction_type', 'amount', 'reference_number', 'created_at',
                   'done_at', 'is_done', 'is_fail']
+
+
+class TransactionChangeDoneSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Transaction
+        fields = ['is_done']
+
+
+class TransactionChangeFailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Transaction
+        fields = ['is_fail']

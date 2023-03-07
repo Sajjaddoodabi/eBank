@@ -8,6 +8,11 @@ from bank.serializers import TransactionDestinationUserSerializer, TransactionDe
 from users.views import get_user
 
 
+class CreateTransactionView(APIView):
+    def post(self, request):
+        pass
+
+
 class CreateTransactionDestinationView(APIView):
     def post(self, request):
         serializer = TransactionDestinationUserSerializer(data=request.data)
