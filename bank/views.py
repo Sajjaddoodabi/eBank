@@ -159,7 +159,7 @@ class TransactionTypeListView(ListAPIView):
         return TransactionType.objects.filter(is_active=True)
 
 
-class TransactionDetailView(RetrieveUpdateDestroyAPIView):
+class TransactionTypeDetailView(RetrieveUpdateDestroyAPIView):
     serializer_class = TransactionTypeSerializer
     queryset = TransactionType.objects.all()
 
@@ -224,3 +224,22 @@ class CreateTransactionWayView(APIView):
             return Response(tran_serializer.data)
 
         return Response(serializer.errors)
+
+
+class TransactionWayDetailView(RetrieveUpdateDestroyAPIView):
+    queryset = TransactionWay.objects.all()
+    serializer_class = TransactionWaySerializer
+
+    def update(self, request, *args, **kwargs):
+        tran_way = TransactionWay.objects.filter(pk=kwargs.get('pk')).first()
+        title = request.data['title']
+
+        if not tran_way:
+            response = {'detail': 'type not found!'}
+            return Response(response)
+
+        tran_way.title = title
+        tran_way.save()
+
+        serializer = TransactionWaySerializer(tran_way)
+        return Response(serializer.data)
