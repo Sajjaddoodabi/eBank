@@ -151,7 +151,7 @@ class ChangeUserApprovalView(APIView):
         serializer = UserApprovalSerializer(data=request.data)
         if serializer.is_valid():
             user = User.objects.filter(pk=pk).first()
-            is_approved = serializer.data['is_approved']
+            is_approved = request.data['is_approved']
 
             if not user:
                 response = {'detail': 'User NOT found!'}
@@ -176,7 +176,7 @@ class ChangeUserActivationView(APIView):
         serializer = UserActivationSerializer(data=request.data)
         if serializer.is_valid():
             user = User.objects.filter(pk=pk).first()
-            is_active = serializer.data['is_active']
+            is_active = request.data['is_active']
 
             if not user:
                 response = {'detail': 'User NOT found!'}

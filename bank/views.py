@@ -3,9 +3,9 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView
 
-from bank.models import TransactionDestinationUser, TransactionType
+from bank.models import TransactionDestinationUser, TransactionType, TransactionWay
 from bank.serializers import TransactionDestinationUserSerializer, TransactionDestinationChangeValidationSerializer, \
-    TransactionTypeSerializer, TransactionTypeChangeActivationSerializer
+    TransactionTypeSerializer, TransactionTypeChangeActivationSerializer, TransactionWaySerializer
 from users.views import get_user
 
 
@@ -199,5 +199,28 @@ class ChangeTransactionTypeActivation(APIView):
 
             response = {'detail': f'type activation "{tran_type.title}" changed into {is_active}!'}
             return Response(response)
+
+        return Response(serializer.errors)
+
+
+class CreateTransactionWayView(APIView):
+    def post(self, request):
+        serializer = TransactionWaySerializer(data=request.data)
+        if serializer.is_valid():
+            title = serializer.data['title']
+            tran_way = TransactionWay.objects.filter(title=title).exists()
+
+            if tran_way:
+                response = {'detail': 'transaction way already exist!'}
+                return Response(response)
+
+            try:
+                transaction_way = TransactionWay.objects.create(title=title)
+            except Exception as e:
+                response = {'detail': str(e)}
+                return Response(response)
+
+            tran_serializer = TransactionWaySerializer(transaction_way)
+            return Response(tran_serializer.data)
 
         return Response(serializer.errors)
