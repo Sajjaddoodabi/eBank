@@ -3,7 +3,8 @@ from django.urls import path
 from .views import CreateAccountView, AccountDetailView, AccountListAllView, AccountListApproveView, \
     AccountListActiveView, ChangeAccountActivation, \
     ChangeAccountApproval, AccountTypeList, AccountTypeDetail, ChangeAccountTypeActivation, CreateAccountTypeView, \
-    CreateCardView, ChangeCardActivation, ChangeCardBanStatus, CardRenewalView, CardListView, CardDetailView
+    CreateCardView, ChangeCardActivation, ChangeCardBanStatus, CardRenewalView, CardListAllView, CardListActiveView, \
+    CardListBanView, CardDetailView
 
 urlpatterns = [
     path('me/add-account/', CreateAccountView.as_view(), name='add_account'),
@@ -15,7 +16,9 @@ urlpatterns = [
     path('me/change-approval/', ChangeAccountApproval.as_view(), name='change_approval'),
     path('me/card/add-card/', CreateCardView.as_view(), name='add_card'),
     path('me/card/detail/<int:pk>/', CardDetailView.as_view(), name='add_card'),
-    path('card/list/all/', CardListView.as_view(), name='card_list'),
+    path('card/list/all/', CardListAllView.as_view(), name='card_list_all'),
+    path('card/list/ban/', CardListBanView.as_view(), name='card_list_ban'),
+    path('card/list/active/', CardListActiveView.as_view(), name='card_list_active'),
     path('me/card/card-renewal/', CardRenewalView.as_view(), name='card_renewal'),
     path('me/card/change-activation/', ChangeCardActivation.as_view(), name='change_card_activation'),
     path('me/card/change-ban-status/', ChangeCardBanStatus.as_view(), name='change_card_ban_status'),

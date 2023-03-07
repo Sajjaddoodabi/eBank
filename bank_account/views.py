@@ -260,9 +260,25 @@ class CardRenewalView(APIView):
         return Response(card_serializer.data)
 
 
-class CardListView(ListAPIView):
+class CardListAllView(ListAPIView):
     queryset = Card.objects.all()
     serializer_class = CardSerializer
+
+
+class CardListActiveView(ListAPIView):
+    queryset = Card.objects.all()
+    serializer_class = CardSerializer
+
+    def get_queryset(self):
+        return Card.objects.filter(is_active=True)
+
+
+class CardListBanView(ListAPIView):
+    queryset = Card.objects.all()
+    serializer_class = CardSerializer
+
+    def get_queryset(self):
+        return Card.objects.filter(is_ban=True)
 
 
 class CardDetailView(APIView):
