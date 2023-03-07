@@ -90,7 +90,7 @@ class ChangeTransactionDestinationActivation(APIView):
             response = {'detail': 'destination not found!'}
             return Response(response)
 
-        is_active = serializer.data['is_active']
+        is_active = request.data['is_active']
 
         if is_active == 'True' or is_active == 'true':
             is_active = True
@@ -100,7 +100,7 @@ class ChangeTransactionDestinationActivation(APIView):
         destination.is_active = is_active
         destination.save()
 
-        response = {'detail': f'destination activation is {is_active}!'}
+        response = {'detail': f'destination "{destination.destination_name}" activation is {is_active}!'}
         return Response(response)
 
 
@@ -114,7 +114,7 @@ class ChangeTransactionDestinationValidation(APIView):
             response = {'detail': 'destination not found!'}
             return Response(response)
 
-        is_valid = serializer.data['is_valid']
+        is_valid = request.data['is_valid']
 
         if is_valid == 'True' or is_valid == 'true':
             is_valid = True
@@ -124,7 +124,7 @@ class ChangeTransactionDestinationValidation(APIView):
         destination.is_valid = is_valid
         destination.save()
 
-        response = {'detail': f'destination activation is {is_valid}!'}
+        response = {'detail': f'destination "{destination.destination_name}" validation is {is_valid}!'}
         return Response(response)
 
 
@@ -133,10 +133,10 @@ class CreateTransactionTypeView(APIView):
         serializer = TransactionTypeSerializer(data=request.data)
         if serializer.is_valid():
             title = serializer.data['title']
-            tran_type = TransactionType.objects.filter(title=title).first()
+            tran_type = TransactionType.objects.filter(title=title).exists()
 
-            if not tran_type:
-                response = {'detail': 'type not found!'}
+            if tran_type:
+                response = {'detail': 'type already exist!'}
                 return Response(response)
 
             try:
@@ -190,13 +190,14 @@ class ChangeTransactionTypeActivation(APIView):
                 return Response(response)
 
             if is_active == 'True' or is_active == 'true':
-                tran_type.is_active = True
+                is_active = True
             elif is_active == 'False' or is_active == 'false':
-                tran_type.is_active = False
+                is_active = False
 
+            tran_type.is_active = is_active
             tran_type.save()
 
-            response = {'detail': f'type activation changed into {is_active}!'}
+            response = {'detail': f'type activation "{tran_type.title}" changed into {is_active}!'}
             return Response(response)
 
         return Response(serializer.errors)
