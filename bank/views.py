@@ -83,49 +83,52 @@ class TransactionDestinationDetailView(APIView):
 class ChangeTransactionDestinationActivation(APIView):
     def post(self, request, pk):
         serializer = TransactionDestinationChangeValidationSerializer(request.data)
-        user = get_user(request)
-        destination = TransactionDestinationUser.objects.filter(pk=pk, user_id=user.id).first()
+        if serializer.is_valid():
+            destination = TransactionDestinationUser.objects.filter(pk=pk).first()
 
-        if not destination:
-            response = {'detail': 'destination not found!'}
+            if not destination:
+                response = {'detail': 'destination not found!'}
+                return Response(response)
+
+            is_active = serializer.data['is_active']
+
+            if is_active == 'True' or is_active == 'true':
+                is_active = True
+            elif is_active == 'False' or is_active == 'false':
+                is_active = False
+
+            destination.is_active = is_active
+            destination.save()
+
+            response = {'detail': f'destination "{destination.destination_name}" activation is {is_active}!'}
             return Response(response)
 
-        is_active = request.data['is_active']
-
-        if is_active == 'True' or is_active == 'true':
-            is_active = True
-        elif is_active == 'False' or is_active == 'false':
-            is_active = False
-
-        destination.is_active = is_active
-        destination.save()
-
-        response = {'detail': f'destination "{destination.destination_name}" activation is {is_active}!'}
-        return Response(response)
+        return Response(serializer.errors)
 
 
 class ChangeTransactionDestinationValidation(APIView):
     def post(self, request, pk):
-        serializer = TransactionDestinationChangeValidationSerializer(request.data)
-        user = get_user(request)
-        destination = TransactionDestinationUser.objects.filter(pk=pk, user_id=user.id).first()
+        serializer = TransactionDestinationChangeValidationSerializer(data=request.data)
+        if serializer.is_valid():
+            destination = TransactionDestinationUser.objects.filter(pk=pk).first()
 
-        if not destination:
-            response = {'detail': 'destination not found!'}
+            if not destination:
+                response = {'detail': 'destination not found!'}
+                return Response(response)
+
+            is_valid = serializer.data['is_valid']
+
+            if is_valid == 'True' or is_valid == 'true':
+                is_valid = True
+            elif is_valid == 'False' or is_valid == 'false':
+                is_valid = False
+
+            destination.is_valid = is_valid
+            destination.save()
+
+            response = {'detail': f'destination "{destination.destination_name}" validation is {is_valid}!'}
             return Response(response)
-
-        is_valid = request.data['is_valid']
-
-        if is_valid == 'True' or is_valid == 'true':
-            is_valid = True
-        elif is_valid == 'False' or is_valid == 'false':
-            is_valid = False
-
-        destination.is_valid = is_valid
-        destination.save()
-
-        response = {'detail': f'destination "{destination.destination_name}" validation is {is_valid}!'}
-        return Response(response)
+        return Response(serializer.errors)
 
 
 class CreateTransactionTypeView(APIView):
@@ -243,3 +246,16 @@ class TransactionWayDetailView(RetrieveUpdateDestroyAPIView):
 
         serializer = TransactionWaySerializer(tran_way)
         return Response(serializer.data)
+
+
+class TransactionWayAllList(ListAPIView):
+    serializer_class = TransactionWaySerializer
+    queryset = TransactionWay.objects.all()
+
+
+class TransactionWayActiveList(ListAPIView):
+    serializer_class = TransactionWaySerializer
+    queryset = TransactionWay.objects.all()
+
+    def get_queryset(self):
+        return TransactionWay.objects.filter(is_active=True)

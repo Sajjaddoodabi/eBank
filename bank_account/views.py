@@ -251,7 +251,8 @@ class CardListView(ListAPIView):
 
 class CardDetailView(APIView):
     def get(self, request, pk):
-        card = Card.objects.filter(pk=pk).first()
+        user = get_user(request)
+        card = Card.objects.filter(pk=pk, account__user_id=user.id).first()
         if not card:
             response = {'detail': 'card not found!'}
             return Response(response)
@@ -263,7 +264,8 @@ class CardDetailView(APIView):
         pass
 
     def delete(self, request, pk):
-        card = Card.objects.filter(pk=pk).first()
+        user = get_user(request)
+        card = Card.objects.filter(pk=pk, account__user_id=user.id).first()
         if not card:
             response = {'detail': 'card not found!'}
             return Response(response)
