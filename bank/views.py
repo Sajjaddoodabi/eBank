@@ -259,3 +259,28 @@ class TransactionWayActiveList(ListAPIView):
 
     def get_queryset(self):
         return TransactionWay.objects.filter(is_active=True)
+
+
+class ChangeTransactionWayActivation(APIView):
+    def post(self, request, pk):
+        serializer = TransactionWaySerializer(data=request.data)
+        if serializer.is_valid():
+            tran_way = TransactionWay.objects.filter(pk=pk).first()
+            is_active = serializer.data['is_active']
+
+            if not tran_way:
+                response = {'detail': 'type not found!'}
+                return Response(response)
+
+            if is_active == 'True' or is_active == 'true':
+                is_active = True
+            elif is_active == 'False' or is_active == 'false':
+                is_active = False
+
+            tran_way.is_active = is_active
+            tran_way.save()
+
+            response = {'detail': f'type activation "{tran_way.title}" changed into {is_active}!'}
+            return Response(response)
+
+        return Response(serializer.errors)
