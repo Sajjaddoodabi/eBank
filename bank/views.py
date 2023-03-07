@@ -149,3 +149,11 @@ class CreateTransactionTypeView(APIView):
             return Response(tran_serializer.data)
 
         return Response(serializer.errors)
+
+
+class TransactionTypeListView(ListAPIView):
+    queryset = TransactionType.objects.all()
+    serializer_class = TransactionTypeSerializer
+
+    def get_queryset(self):
+        return TransactionType.objects.filter(is_active=True)
