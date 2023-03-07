@@ -154,9 +154,17 @@ class CreateAccountTypeView(APIView):
         return Response(serializer.errors)
 
 
-class AccountTypeList(ListAPIView):
+class AccountTypeListAllView(ListAPIView):
     queryset = AccountType.objects.all()
     serializer_class = AccountTypeSerializer
+
+
+class AccountTypeListActiveView(ListAPIView):
+    queryset = AccountType.objects.all()
+    serializer_class = AccountTypeSerializer
+
+    def get_queryset(self):
+        return AccountType.objects.filter(is_active=True)
 
 
 class AccountTypeDetail(APIView):
