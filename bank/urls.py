@@ -1,9 +1,9 @@
 from django.urls import path
 from .views import CreateTransactionDestinationView, TransactionDestinationListAll, TransactionDestinationAllList, \
     ChangeTransactionDestinationActivation, ChangeTransactionDestinationValidation, TransactionDestinationDetailView, \
-    CreateTransactionTypeView, TransactionTypeListAllView, TransactionTypeListActiveView , TransactionTypeDetailView, \
+    CreateTransactionTypeView, TransactionTypeListAllView, TransactionTypeListActiveView, TransactionTypeDetailView, \
     ChangeTransactionTypeActivationView, CreateTransactionWayView, TransactionWayDetailView, TransactionWayAllListView, \
-    TransactionWayActiveListView,ChangeTransactionWayActivationView, TransactionDestinationActiveList
+    TransactionWayActiveListView, ChangeTransactionWayActivationView, TransactionDestinationActiveList
 
 urlpatterns = [
     path('me/destination/create-destination/', CreateTransactionDestinationView.as_view(), name='create_destination'),

@@ -88,9 +88,25 @@ class UserView(APIView):
         return Response(serializer.data)
 
 
-class UserListView(ListAPIView):
+class UserListAllView(ListAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+
+
+class UserListActiveView(ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+    def get_queryset(self):
+        return User.objects.filter(is_active=True)
+
+
+class UserListApprovedView(ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+    def get_queryset(self):
+        return User.objects.filter(is_approved=True)
 
 
 class UserUpdateView(APIView):

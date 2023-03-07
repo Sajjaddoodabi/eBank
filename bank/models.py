@@ -32,8 +32,7 @@ class TransactionDestinationUser(models.Model):
 
 class Transaction(models.Model):
     user = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name='user')
-    transaction_to = models.ForeignKey(TransactionDestinationUser, on_delete=models.DO_NOTHING,
-                                       related_name='destination_user')
+    transaction_to = models.ForeignKey(TransactionDestinationUser, on_delete=models.DO_NOTHING, related_name='destination_user')
     type = models.ForeignKey(TransactionType, on_delete=models.RESTRICT, related_name='transaction_type')
     amount = models.PositiveIntegerField(default=0)
     reference_number = models.CharField(max_length=30)
