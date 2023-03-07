@@ -36,17 +36,17 @@ class CreateTransactionDestinationView(APIView):
         return Response(serializer.errors)
 
 
-class TransactionDestinationListAll(ListAPIView):
+class TransactionDestinationListAllView(ListAPIView):
     queryset = TransactionDestinationUser.objects.all()
     serializer_class = TransactionDestinationUserSerializer
 
 
-class TransactionDestinationAllList(ListAPIView):
+class TransactionDestinationAllListView(ListAPIView):
     queryset = TransactionDestinationUser.objects.all()
     serializer_class = TransactionDestinationUserSerializer
 
 
-class TransactionDestinationActiveList(ListAPIView):
+class TransactionDestinationActiveListView(ListAPIView):
     queryset = TransactionDestinationUser.objects.all()
     serializer_class = TransactionDestinationUserSerializer
 
@@ -84,7 +84,7 @@ class TransactionDestinationDetailView(APIView):
         return Response(response)
 
 
-class ChangeTransactionDestinationActivation(APIView):
+class ChangeTransactionDestinationActivationView(APIView):
     def post(self, request, pk):
         serializer = TransactionDestinationChangeValidationSerializer(request.data)
         if serializer.is_valid():
@@ -110,7 +110,7 @@ class ChangeTransactionDestinationActivation(APIView):
         return Response(serializer.errors)
 
 
-class ChangeTransactionDestinationValidation(APIView):
+class ChangeTransactionDestinationValidationView(APIView):
     def post(self, request, pk):
         serializer = TransactionDestinationChangeValidationSerializer(data=request.data)
         if serializer.is_valid():

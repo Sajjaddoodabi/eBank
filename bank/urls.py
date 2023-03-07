@@ -1,18 +1,18 @@
 from django.urls import path
-from .views import CreateTransactionDestinationView, TransactionDestinationListAll, TransactionDestinationAllList, \
-    ChangeTransactionDestinationActivation, ChangeTransactionDestinationValidation, TransactionDestinationDetailView, \
+from .views import CreateTransactionDestinationView, TransactionDestinationListAllView, TransactionDestinationAllListView, \
+    ChangeTransactionDestinationActivationView, ChangeTransactionDestinationValidationView, TransactionDestinationDetailView, \
     CreateTransactionTypeView, TransactionTypeListAllView, TransactionTypeListActiveView, TransactionTypeDetailView, \
     ChangeTransactionTypeActivationView, CreateTransactionWayView, TransactionWayDetailView, TransactionWayAllListView, \
-    TransactionWayActiveListView, ChangeTransactionWayActivationView, TransactionDestinationActiveList
+    TransactionWayActiveListView, ChangeTransactionWayActivationView, TransactionDestinationActiveListView
 
 urlpatterns = [
     path('me/destination/create-destination/', CreateTransactionDestinationView.as_view(), name='create_destination'),
-    path('me/destination/list/', TransactionDestinationAllList.as_view(), name='my_destination_list'),
+    path('me/destination/list/', TransactionDestinationAllListView.as_view(), name='my_destination_list'),
     path('me/destination/detail/<int:pk>/', TransactionDestinationDetailView.as_view(), name='destination_detail'),
-    path('destination/list/all/', TransactionDestinationListAll.as_view(), name='destination_list_all'),
-    path('destination/list/active/', TransactionDestinationActiveList.as_view(), name='destination_list_active'),
-    path('destination/change-activation/<int:pk>/', ChangeTransactionDestinationActivation.as_view(), name='change_activation_destination'),
-    path('destination/change-validation/<int:pk>/', ChangeTransactionDestinationValidation.as_view(), name='change_validation_destination'),
+    path('destination/list/all/', TransactionDestinationListAllView.as_view(), name='destination_list_all'),
+    path('destination/list/active/', TransactionDestinationActiveListView.as_view(), name='destination_list_active'),
+    path('destination/change-activation/<int:pk>/', ChangeTransactionDestinationActivationView.as_view(), name='change_activation_destination'),
+    path('destination/change-validation/<int:pk>/', ChangeTransactionDestinationValidationView.as_view(), name='change_validation_destination'),
     path('type/add-type/', CreateTransactionTypeView.as_view(), name='add_type'),
     path('type/list/all/', TransactionTypeListAllView.as_view(), name='type_list_all'),
     path('type/list/active/', TransactionTypeListActiveView.as_view(), name='type_list_active'),

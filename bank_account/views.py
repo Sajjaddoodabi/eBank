@@ -167,7 +167,7 @@ class AccountTypeListActiveView(ListAPIView):
         return AccountType.objects.filter(is_active=True)
 
 
-class AccountTypeDetail(APIView):
+class AccountTypeDetailView(APIView):
     def put(self, request, pk):
         acc_type = AccountType.objects.filter(pk=pk).first()
         if not acc_type:
@@ -181,7 +181,7 @@ class AccountTypeDetail(APIView):
         return Response(serializer.data)
 
 
-class ChangeAccountTypeActivation(APIView):
+class ChangeAccountTypeActivationView(APIView):
     def post(self, request, pk):
         acc_type = AccountType.objects.filter(pk=pk).first()
         is_active = request.data['is_active']
@@ -316,7 +316,7 @@ class CardDetailView(APIView):
         return Response(response)
 
 
-class ChangeCardActivation(APIView):
+class ChangeCardActivationView(APIView):
     def post(self, request, pk):
         card = Card.objects.filter(pk=pk).first()
         is_active = request.data['is_active']
@@ -336,7 +336,7 @@ class ChangeCardActivation(APIView):
         return Response(response)
 
 
-class ChangeCardBanStatus(APIView):
+class ChangeCardBanStatusView(APIView):
     def post(self, request, pk):
         card = Card.objects.filter(pk=pk).first()
         is_ban = request.data['is_ban']
