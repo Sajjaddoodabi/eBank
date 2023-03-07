@@ -71,9 +71,25 @@ class AccountDetailView(APIView):
         return Response(response)
 
 
-class AccountListView(ListAPIView):
+class AccountListAllView(ListAPIView):
     queryset = Account.objects.all()
     serializer_class = AccountSerializer
+
+
+class AccountListActiveView(ListAPIView):
+    queryset = Account.objects.all()
+    serializer_class = AccountSerializer
+
+    def get_queryset(self):
+        return Account.objects.filter(is_active=True)
+
+
+class AccountListApproveView(ListAPIView):
+    queryset = Account.objects.all()
+    serializer_class = AccountSerializer
+
+    def get_queryset(self):
+        return Account.objects.filter(is_approved=True)
 
 
 class ChangeAccountActivation(APIView):
