@@ -1,3 +1,4 @@
+import datetime
 import random
 
 from rest_framework.response import Response
@@ -8,6 +9,7 @@ from bank.models import TransactionDestinationUser, TransactionType, Transaction
 from bank.serializers import TransactionDestinationUserSerializer, TransactionDestinationChangeValidationSerializer, \
     TransactionTypeSerializer, TransactionTypeChangeActivationSerializer, TransactionWaySerializer, \
     TransactionSerializer
+from bank_account.models import Account
 from users.views import get_user
 
 
@@ -16,12 +18,19 @@ class CreateTransactionView(APIView):
         serializer = TransactionSerializer(data=request.data)
         if serializer.is_valid():
             user = get_user(request)
-            destination = serializer.data['destination_user']
-            des_type = serializer.data['destination_type']
-            amount = serializer.data['amount']
+            destination = request.data['transaction_to']
+            des_type = request.data['type']
+            amount = int(request.data['amount'])
 
-            destination_user = TransactionDestinationUser.objects.filter(card_number=destination).first()
+            account = Account.objects.filter(user_id=user.id).first()
+
+            destination_user = TransactionDestinationUser.objects.filter(card_number=destination,
+                                                                         user_id=user.id).first()
             destination_type = TransactionType.objects.filter(title=des_type).first()
+
+            if not account:
+                response = {'detail': 'user does NOT have an account!'}
+                return Response(response)
 
             if not destination_user:
                 response = {'detail': 'destination user is invalid!'}
@@ -30,6 +39,11 @@ class CreateTransactionView(APIView):
             if not destination_type:
                 response = {'detail': 'destination type is invalid!'}
                 return Response(response)
+
+            if destination_type.title != 'charge':
+                if amount > account.balance:
+                    response = {'detail': 'Not enough balance!'}
+                    return Response(response)
 
             reference_number = random.randint(10 ** 10, 10 ** 11)
 
@@ -49,6 +63,36 @@ class CreateTransactionView(APIView):
             return Response(transaction_ser.data)
 
         return Response(serializer.errors)
+
+
+class DoneTransactionView(APIView):
+    def post(self, request, pk):
+        user = get_user(request)
+        transaction = Transaction.objects.filter(pk=pk, is_done=False, is_fail=False).first()
+        account = Account.objects.filter(user_id=user.id).first()
+
+        if not transaction:
+            response = {'detail': 'transaction NOT found!'}
+            return Response(response)
+
+        if not account:
+            response = {'detail': 'account NOT found!'}
+            return Response(response)
+
+        transaction.is_done = True
+        transaction.save()
+
+        if transaction.type.title == 'charge':
+            account.balance += transaction.amount
+            account.save()
+
+        transaction_serializer = TransactionSerializer(transaction)
+        return Response(transaction_serializer.data)
+
+
+class FailTransactionView(APIView):
+    def post(self, request):
+        pass
 
 
 class CreateTransactionDestinationView(APIView):

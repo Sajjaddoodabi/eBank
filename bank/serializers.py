@@ -1,6 +1,8 @@
 from rest_framework import serializers
 
 from bank.models import TransactionType, TransactionDestinationUser, TransactionWay, Transaction
+from bank_account.serializers import AccountSerializer
+from users.serializers import UserMiniSerializer
 
 
 class TransactionTypeSerializer(serializers.ModelSerializer):
@@ -30,12 +32,12 @@ class TransactionWayChangeActivationSerializer(serializers.ModelSerializer):
 
 
 class TransactionDestinationUserSerializer(serializers.ModelSerializer):
-    transaction_destination = serializers.CharField(source='user.get_full_name()', read_only=True)
+    user = serializers.CharField(source='user.get_full_name', read_only=True)
 
     class Meta:
         model = TransactionDestinationUser
         read_only_fields = ('is_active', 'is_valid')
-        fields = ['id', 'transaction_destination', 'destination_name', 'card_number', 'is_active', 'is_valid']
+        fields = ['id', 'user', 'destination_name', 'card_number', 'is_active', 'is_valid']
 
 
 class TransactionDestinationChangeActivationSerializer(serializers.ModelSerializer):
@@ -51,23 +53,24 @@ class TransactionDestinationChangeValidationSerializer(serializers.ModelSerializ
 
 
 class TransactionSerializer(serializers.ModelSerializer):
-    destination_user = TransactionDestinationUserSerializer(read_only=True)
-    transaction_type = TransactionTypeSerializer(read_only=True)
+    user = UserMiniSerializer(read_only=True)
+    transaction_to = TransactionDestinationUserSerializer(read_only=True)
+    type = TransactionTypeSerializer(read_only=True)
 
     class Meta:
         model = Transaction
         read_only_fields = ('is_done', 'is_fail', 'reference_number', 'created_at', 'finish_at')
-        fields = ['id', 'user', 'destination_user', 'transaction_type', 'amount', 'reference_number', 'created_at',
+        fields = ['id', 'user', 'transaction_to', 'type', 'amount', 'reference_number', 'created_at',
                   'finish_at', 'is_done', 'is_fail']
 
 
-class TransactionChangeDoneSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Transaction
-        fields = ['is_done']
-
-
-class TransactionChangeFailSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Transaction
-        fields = ['is_fail']
+# class TransactionChangeDoneSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Transaction
+#         fields = ['is_done']
+#
+#
+# class TransactionChangeFailSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Transaction
+#         fields = ['is_fail']

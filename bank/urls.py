@@ -4,10 +4,12 @@ from .views import CreateTransactionDestinationView, TransactionDestinationListA
     CreateTransactionTypeView, TransactionTypeListAllView, TransactionTypeListActiveView, TransactionTypeDetailView, \
     ChangeTransactionTypeActivationView, CreateTransactionWayView, TransactionWayDetailView, TransactionWayAllListView, \
     TransactionWayActiveListView, ChangeTransactionWayActivationView, TransactionDestinationActiveListView, \
-    CreateTransactionView
+    CreateTransactionView, DoneTransactionView
 
 urlpatterns = [
     path('me/transaction/create-transaction/', CreateTransactionView.as_view(), name='create_transaction'),
+    path('me/transaction/detail/done/<int:pk>/', DoneTransactionView.as_view(), name='done_transaction'),
+    # path('me/transaction/create-transaction/', CreateTransactionView.as_view(), name='create_transaction'),
     path('me/destination/create-destination/', CreateTransactionDestinationView.as_view(), name='create_destination'),
     path('me/destination/list/', TransactionDestinationAllListView.as_view(), name='my_destination_list'),
     path('me/destination/detail/<int:pk>/', TransactionDestinationDetailView.as_view(), name='destination_detail'),
