@@ -144,6 +144,14 @@ class TransactionFailListView(ListAPIView):
         return Transaction.objects.filter(is_done=False, is_fail=True)
 
 
+class TransactionQueueListView(ListAPIView):
+    queryset = Transaction.objects.all()
+    serializer_class = TransactionSerializer
+
+    def get_queryset(self):
+        return Transaction.objects.filter(is_done=False, is_fail=False)
+
+
 class CreateTransactionDestinationView(APIView):
     def post(self, request):
         serializer = TransactionDestinationUserSerializer(data=request.data)
