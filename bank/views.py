@@ -1,4 +1,3 @@
-import datetime
 import random
 
 from rest_framework.response import Response
