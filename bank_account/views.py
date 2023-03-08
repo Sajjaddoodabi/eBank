@@ -46,6 +46,19 @@ def check_user_age(user):
     return age
 
 
+class MyAccountDetail(APIView):
+    def get(self, request):
+        user = get_user(request)
+        account = Account.objects.filter(user_id=user.id).first()
+
+        if not account:
+            response = {'detail': 'account not found!'}
+            return Response(response)
+
+        serializer = AccountSerializer(account)
+        return Response(serializer.data)
+
+
 class AccountDetailView(APIView):
     def get(self, request, pk):
         account = Account.objects.filter(pk=pk).first()
@@ -221,7 +234,8 @@ class CreateCardView(APIView):
             card_number = generate_card_number()
 
         try:
-            card = Card.objects.create(account_id=account.id, card_number=card_number, cvv2=cvv2, expire_date=expire_date)
+            card = Card.objects.create(account_id=account.id, card_number=card_number, cvv2=cvv2,
+                                       expire_date=expire_date)
         except Exception as e:
             response = {'detail': str(e)}
             return Response(response)

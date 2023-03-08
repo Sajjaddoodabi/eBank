@@ -5,14 +5,15 @@ from .views import CreateAccountView, AccountDetailView, AccountListAllView, Acc
     ChangeAccountApproval, AccountTypeListAllView, AccountTypeListActiveView, AccountTypeDetailView, \
     ChangeAccountTypeActivationView, CreateAccountTypeView, \
     CreateCardView, ChangeCardActivationView, ChangeCardBanStatusView, CardRenewalView, CardListAllView, CardListActiveView, \
-    CardListBanView, CardDetailView
+    CardListBanView, CardDetailView, MyAccountDetail
 
 urlpatterns = [
     path('me/add-account/', CreateAccountView.as_view(), name='add_account'),
     path('account/list/all/', AccountListAllView.as_view(), name='account_list_all'),
     path('account/list/active/', AccountListActiveView.as_view(), name='account_list_active'),
     path('account/list/approve/', AccountListApproveView.as_view(), name='account_list_approve'),
-    path('me/account/detail/<int:pk>/', AccountDetailView.as_view(), name='account_detail'),
+    path('account/detail/<int:pk>/', AccountDetailView.as_view(), name='account_detail'),
+    path('me/account/detail/', MyAccountDetail.as_view(), name='my_account_detail'),
     path('me/change-activation/', ChangeAccountActivation.as_view(), name='change_activation'),
     path('me/change-approval/', ChangeAccountApproval.as_view(), name='change_approval'),
     path('me/card/add-card/', CreateCardView.as_view(), name='add_card'),
