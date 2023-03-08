@@ -4,12 +4,17 @@ from .views import CreateTransactionDestinationView, TransactionDestinationListA
     CreateTransactionTypeView, TransactionTypeListAllView, TransactionTypeListActiveView, TransactionTypeDetailView, \
     ChangeTransactionTypeActivationView, CreateTransactionWayView, TransactionWayDetailView, TransactionWayAllListView, \
     TransactionWayActiveListView, ChangeTransactionWayActivationView, TransactionDestinationActiveListView, \
-    CreateTransactionView, DoneTransactionView
+    CreateTransactionView, DoneTransactionView, FailTransactionView, TransactionDetailView, TransactionAllListView, \
+    TransactionDoneListView, TransactionFailListView
 
 urlpatterns = [
     path('me/transaction/create-transaction/', CreateTransactionView.as_view(), name='create_transaction'),
-    path('me/transaction/detail/done/<int:pk>/', DoneTransactionView.as_view(), name='done_transaction'),
-    # path('me/transaction/create-transaction/', CreateTransactionView.as_view(), name='create_transaction'),
+    path('transaction/detail/done/<int:pk>/', DoneTransactionView.as_view(), name='done_transaction'),
+    path('transaction/detail/fail/<int:pk>/', FailTransactionView.as_view(), name='fail_transaction'),
+    path('transaction/detail/<int:pk>/', TransactionDetailView.as_view(), name='transaction_detail'),
+    path('transaction/list/all/', TransactionAllListView.as_view(), name='transaction_list_all'),
+    path('transaction/list/done/', TransactionDoneListView.as_view(), name='transaction_list_done'),
+    path('transaction/list/fail/', TransactionFailListView.as_view(), name='transaction_list_fail'),
     path('me/destination/create-destination/', CreateTransactionDestinationView.as_view(), name='create_destination'),
     path('me/destination/list/', TransactionDestinationAllListView.as_view(), name='my_destination_list'),
     path('me/destination/detail/<int:pk>/', TransactionDestinationDetailView.as_view(), name='destination_detail'),

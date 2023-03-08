@@ -3,7 +3,7 @@ import random
 
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView, RetrieveAPIView, DestroyAPIView
 
 from bank.models import TransactionDestinationUser, TransactionType, TransactionWay, Transaction
 from bank.serializers import TransactionDestinationUserSerializer, TransactionDestinationChangeValidationSerializer, \
@@ -91,8 +91,57 @@ class DoneTransactionView(APIView):
 
 
 class FailTransactionView(APIView):
-    def post(self, request):
-        pass
+    def post(self, request, pk):
+        user = get_user(request)
+        transaction = Transaction.objects.filter(pk=pk, is_done=False, is_fail=False).first()
+        account = Account.objects.filter(user_id=user.id).first()
+
+        if not transaction:
+            response = {'detail': 'transaction NOT found!'}
+            return Response(response)
+
+        if not account:
+            response = {'detail': 'account NOT found!'}
+            return Response(response)
+
+        transaction.is_done = False
+        transaction.save()
+
+        transaction_serializer = TransactionSerializer(transaction)
+        return Response(transaction_serializer.data)
+
+
+class TransactionDetailView(APIView):
+    def get(self, request, pk):
+        transaction = Transaction.objects.filter(pk=pk).first()
+
+        if not transaction:
+            response = {'detail': 'transaction NOT found!'}
+            return Response(response)
+
+        transaction_serializer = TransactionSerializer(transaction)
+        return Response(transaction_serializer.data)
+
+
+class TransactionAllListView(ListAPIView):
+    queryset = Transaction.objects.all()
+    serializer_class = TransactionSerializer
+
+
+class TransactionDoneListView(ListAPIView):
+    queryset = Transaction.objects.all()
+    serializer_class = TransactionSerializer
+
+    def get_queryset(self):
+        return Transaction.objects.filter(is_done=True, is_fail=False)
+
+
+class TransactionFailListView(ListAPIView):
+    queryset = Transaction.objects.all()
+    serializer_class = TransactionSerializer
+
+    def get_queryset(self):
+        return Transaction.objects.filter(is_done=False, is_fail=True)
 
 
 class CreateTransactionDestinationView(APIView):
