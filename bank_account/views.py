@@ -5,12 +5,15 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView, UpdateAPIView
 
+from users.permissions import IsApproved, IsAdmin
 from bank_account.models import AccountType, Account, Card
 from bank_account.serializers import AccountSerializer, AccountTypeSerializer, CardSerializer
 from users.views import get_user
 
 
 class CreateAccountView(APIView):
+    permission_classes = (IsApproved,)
+
     def post(self, request):
         serializer = AccountSerializer(data=request.data)
         if serializer.is_valid():
@@ -47,6 +50,8 @@ def check_user_age(user):
 
 
 class MyAccountDetail(APIView):
+    permission_classes = (IsApproved,)
+
     def get(self, request):
         user = get_user(request)
         account = Account.objects.filter(user_id=user.id).first()
@@ -60,6 +65,8 @@ class MyAccountDetail(APIView):
 
 
 class AccountDetailView(APIView):
+    permission_classes = (IsAdmin,)
+
     def get(self, request, pk):
         account = Account.objects.filter(pk=pk).first()
         if not account:
@@ -85,11 +92,13 @@ class AccountDetailView(APIView):
 
 
 class AccountListAllView(ListAPIView):
+    permission_classes = (IsAdmin,)
     queryset = Account.objects.all()
     serializer_class = AccountSerializer
 
 
 class AccountListActiveView(ListAPIView):
+    permission_classes = (IsAdmin,)
     queryset = Account.objects.all()
     serializer_class = AccountSerializer
 
@@ -98,6 +107,7 @@ class AccountListActiveView(ListAPIView):
 
 
 class AccountListApproveView(ListAPIView):
+    permission_classes = (IsAdmin,)
     queryset = Account.objects.all()
     serializer_class = AccountSerializer
 
@@ -106,6 +116,8 @@ class AccountListApproveView(ListAPIView):
 
 
 class ChangeAccountActivation(APIView):
+    permission_classes = (IsAdmin,)
+
     def post(self, request):
         user = get_user(request)
         is_active = request.data['is_active']
@@ -128,6 +140,8 @@ class ChangeAccountActivation(APIView):
 
 
 class ChangeAccountApproval(APIView):
+    permission_classes = (IsAdmin,)
+
     def post(self, request):
         user = get_user(request)
         is_approved = request.data['is_approved']
@@ -150,6 +164,8 @@ class ChangeAccountApproval(APIView):
 
 
 class CreateAccountTypeView(APIView):
+    permission_classes = (IsAdmin,)
+
     def post(self, request):
         serializer = AccountTypeSerializer(data=request.data)
         if serializer.is_valid():
@@ -168,11 +184,13 @@ class CreateAccountTypeView(APIView):
 
 
 class AccountTypeListAllView(ListAPIView):
+    permission_classes = (IsAdmin,)
     queryset = AccountType.objects.all()
     serializer_class = AccountTypeSerializer
 
 
 class AccountTypeListActiveView(ListAPIView):
+    permission_classes = (IsAdmin,)
     queryset = AccountType.objects.all()
     serializer_class = AccountTypeSerializer
 
@@ -181,6 +199,8 @@ class AccountTypeListActiveView(ListAPIView):
 
 
 class AccountTypeDetailView(APIView):
+    permission_classes = (IsAdmin,)
+
     def put(self, request, pk):
         acc_type = AccountType.objects.filter(pk=pk).first()
         if not acc_type:
@@ -195,6 +215,8 @@ class AccountTypeDetailView(APIView):
 
 
 class ChangeAccountTypeActivationView(APIView):
+    permission_classes = (IsAdmin,)
+
     def post(self, request, pk):
         acc_type = AccountType.objects.filter(pk=pk).first()
         is_active = request.data['is_active']
@@ -215,6 +237,8 @@ class ChangeAccountTypeActivationView(APIView):
 
 
 class CreateCardView(APIView):
+    permission_classes = (IsApproved,)
+
     def post(self, request):
         user = get_user(request)
 
@@ -254,6 +278,8 @@ def generate_card_number():
 
 
 class CardRenewalView(APIView):
+    permission_classes = (IsApproved,)
+
     def post(self, request):
         user = get_user(request)
 
@@ -283,11 +309,13 @@ class CardRenewalView(APIView):
 
 
 class CardListAllView(ListAPIView):
+    permission_classes = (IsAdmin,)
     queryset = Card.objects.all()
     serializer_class = CardSerializer
 
 
 class CardListActiveView(ListAPIView):
+    permission_classes = (IsAdmin,)
     queryset = Card.objects.all()
     serializer_class = CardSerializer
 
@@ -296,6 +324,7 @@ class CardListActiveView(ListAPIView):
 
 
 class CardListBanView(ListAPIView):
+    permission_classes = (IsAdmin,)
     queryset = Card.objects.all()
     serializer_class = CardSerializer
 
@@ -304,6 +333,8 @@ class CardListBanView(ListAPIView):
 
 
 class CardDetailView(APIView):
+    permission_classes = (IsApproved,)
+
     def get(self, request, pk):
         user = get_user(request)
         card = Card.objects.filter(pk=pk, account__user_id=user.id).first()
@@ -331,6 +362,8 @@ class CardDetailView(APIView):
 
 
 class ChangeCardActivationView(APIView):
+    permission_classes = (IsAdmin,)
+
     def post(self, request, pk):
         card = Card.objects.filter(pk=pk).first()
         is_active = request.data['is_active']
@@ -351,6 +384,8 @@ class ChangeCardActivationView(APIView):
 
 
 class ChangeCardBanStatusView(APIView):
+    permission_classes = (IsAdmin,)
+
     def post(self, request, pk):
         card = Card.objects.filter(pk=pk).first()
         is_ban = request.data['is_ban']
