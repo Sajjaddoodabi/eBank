@@ -132,11 +132,13 @@ class TransactionDetailView(APIView):
 
 
 class TransactionAllListView(ListAPIView):
+    permission_classes = (IsAdmin,)
     queryset = Transaction.objects.all()
     serializer_class = TransactionSerializer
 
 
 class TransactionDoneListView(ListAPIView):
+    permission_classes = (IsAdmin,)
     queryset = Transaction.objects.all()
     serializer_class = TransactionSerializer
 
@@ -145,6 +147,7 @@ class TransactionDoneListView(ListAPIView):
 
 
 class TransactionFailListView(ListAPIView):
+    permission_classes = (IsAdmin,)
     queryset = Transaction.objects.all()
     serializer_class = TransactionSerializer
 
@@ -153,6 +156,7 @@ class TransactionFailListView(ListAPIView):
 
 
 class TransactionQueueListView(ListAPIView):
+    permission_classes = (IsAdmin,)
     queryset = Transaction.objects.all()
     serializer_class = TransactionSerializer
 
@@ -161,6 +165,7 @@ class TransactionQueueListView(ListAPIView):
 
 
 class MyTransactionListAllView(ListAPIView):
+    permission_classes = (IsApproved,)
     queryset = Transaction.objects.all()
     serializer_class = TransactionSerializer
 
@@ -170,6 +175,7 @@ class MyTransactionListAllView(ListAPIView):
 
 
 class MyTransactionListWithdrawView(ListAPIView):
+    permission_classes = (IsApproved,)
     queryset = Transaction.objects.all()
     serializer_class = TransactionSerializer
 
@@ -179,6 +185,7 @@ class MyTransactionListWithdrawView(ListAPIView):
 
 
 class MyTransactionListChargeView(ListAPIView):
+    permission_classes = (IsApproved,)
     queryset = Transaction.objects.all()
     serializer_class = TransactionSerializer
 
@@ -188,6 +195,8 @@ class MyTransactionListChargeView(ListAPIView):
 
 
 class CreateTransactionDestinationView(APIView):
+    permission_classes = (IsApproved,)
+
     def post(self, request):
         serializer = TransactionDestinationUserSerializer(data=request.data)
         if serializer.is_valid():
@@ -216,16 +225,19 @@ class CreateTransactionDestinationView(APIView):
 
 
 class TransactionDestinationListAllView(ListAPIView):
+    permission_classes = (IsAdmin,)
     queryset = TransactionDestinationUser.objects.all()
     serializer_class = TransactionDestinationUserSerializer
 
 
 class TransactionDestinationAllListView(ListAPIView):
+    permission_classes = (IsAdmin,)
     queryset = TransactionDestinationUser.objects.all()
     serializer_class = TransactionDestinationUserSerializer
 
 
 class TransactionDestinationActiveListView(ListAPIView):
+    permission_classes = (IsApproved,)
     queryset = TransactionDestinationUser.objects.all()
     serializer_class = TransactionDestinationUserSerializer
 
@@ -235,6 +247,8 @@ class TransactionDestinationActiveListView(ListAPIView):
 
 
 class TransactionDestinationDetailView(APIView):
+    permission_classes = (IsApproved,)
+
     def get(self, request, pk):
         user = get_user(request)
         destination = TransactionDestinationUser.objects.filter(pk=pk, user_id=user.id).first()
@@ -264,6 +278,8 @@ class TransactionDestinationDetailView(APIView):
 
 
 class ChangeTransactionDestinationActivationView(APIView):
+    permission_classes = (IsAdmin,)
+
     def post(self, request, pk):
         serializer = TransactionDestinationChangeValidationSerializer(request.data)
         if serializer.is_valid():
@@ -290,6 +306,8 @@ class ChangeTransactionDestinationActivationView(APIView):
 
 
 class ChangeTransactionDestinationValidationView(APIView):
+    permission_classes = (IsAdmin,)
+
     def post(self, request, pk):
         serializer = TransactionDestinationChangeValidationSerializer(data=request.data)
         if serializer.is_valid():
@@ -315,6 +333,8 @@ class ChangeTransactionDestinationValidationView(APIView):
 
 
 class CreateTransactionTypeView(APIView):
+    permission_classes = (IsApproved,)
+
     def post(self, request):
         serializer = TransactionTypeSerializer(data=request.data)
         if serializer.is_valid():
@@ -338,11 +358,13 @@ class CreateTransactionTypeView(APIView):
 
 
 class TransactionTypeListAllView(ListAPIView):
+    permission_classes = (IsAdmin,)
     queryset = TransactionType.objects.all()
     serializer_class = TransactionTypeSerializer
 
 
 class TransactionTypeListActiveView(ListAPIView):
+    permission_classes = (IsApproved,)
     queryset = TransactionType.objects.all()
     serializer_class = TransactionTypeSerializer
 
@@ -351,6 +373,7 @@ class TransactionTypeListActiveView(ListAPIView):
 
 
 class TransactionTypeDetailView(RetrieveUpdateDestroyAPIView):
+    permission_classes = (IsAdmin,)
     serializer_class = TransactionTypeSerializer
     queryset = TransactionType.objects.all()
 
@@ -370,6 +393,8 @@ class TransactionTypeDetailView(RetrieveUpdateDestroyAPIView):
 
 
 class ChangeTransactionTypeActivationView(APIView):
+    permission_classes = (IsAdmin,)
+
     def post(self, request, pk):
         serializer = TransactionTypeChangeActivationSerializer(data=request.data)
         if serializer.is_valid():
@@ -395,6 +420,8 @@ class ChangeTransactionTypeActivationView(APIView):
 
 
 class CreateTransactionWayView(APIView):
+    permission_classes = (IsAdmin,)
+
     def post(self, request):
         serializer = TransactionWaySerializer(data=request.data)
         if serializer.is_valid():
@@ -418,6 +445,7 @@ class CreateTransactionWayView(APIView):
 
 
 class TransactionWayDetailView(RetrieveUpdateDestroyAPIView):
+    permission_classes = (IsAdmin,)
     queryset = TransactionWay.objects.all()
     serializer_class = TransactionWaySerializer
 
@@ -437,11 +465,13 @@ class TransactionWayDetailView(RetrieveUpdateDestroyAPIView):
 
 
 class TransactionWayAllListView(ListAPIView):
+    permission_classes = (IsAdmin,)
     serializer_class = TransactionWaySerializer
     queryset = TransactionWay.objects.all()
 
 
 class TransactionWayActiveListView(ListAPIView):
+    permission_classes = (IsApproved,)
     serializer_class = TransactionWaySerializer
     queryset = TransactionWay.objects.all()
 
@@ -450,6 +480,8 @@ class TransactionWayActiveListView(ListAPIView):
 
 
 class ChangeTransactionWayActivationView(APIView):
+    permission_classes = (IsAdmin,)
+
     def post(self, request, pk):
         serializer = TransactionWaySerializer(data=request.data)
         if serializer.is_valid():
