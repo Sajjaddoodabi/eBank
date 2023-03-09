@@ -35,6 +35,14 @@ class IsNotAuthenticated(BasePermission):
         return user.is_anonymous
 
 
+class IsApproved(BasePermission):
+    def has_permission(self, request, view):
+        user = get_user(request)
+        if request.method in SAFE_METHODS:
+            return True
+        return bool(user and user.is_authenticated and user.is_approved)
+
+
 class IsAdmin(BasePermission):
     def has_permission(self, request, view):
         user = get_user(request)

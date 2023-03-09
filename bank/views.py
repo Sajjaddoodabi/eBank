@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView, RetrieveAPIView, DestroyAPIView
 
+from users.permissions import IsAuthenticated, IsAdmin, IsApproved
 from bank.models import TransactionDestinationUser, TransactionType, TransactionWay, Transaction
 from bank.serializers import TransactionDestinationUserSerializer, TransactionDestinationChangeValidationSerializer, \
     TransactionTypeSerializer, TransactionTypeChangeActivationSerializer, TransactionWaySerializer, \
@@ -13,6 +14,8 @@ from users.views import get_user
 
 
 class CreateTransactionView(APIView):
+    permission_classes = (IsApproved,)
+
     def post(self, request):
         serializer = TransactionSerializer(data=request.data)
         if serializer.is_valid():
@@ -65,6 +68,8 @@ class CreateTransactionView(APIView):
 
 
 class DoneTransactionView(APIView):
+    permission_classes = (IsAdmin,)
+
     def post(self, request, pk):
         user = get_user(request)
         transaction = Transaction.objects.filter(pk=pk, is_done=False, is_fail=False).first()
@@ -90,6 +95,8 @@ class DoneTransactionView(APIView):
 
 
 class FailTransactionView(APIView):
+    permission_classes = (IsAdmin,)
+
     def post(self, request, pk):
         user = get_user(request)
         transaction = Transaction.objects.filter(pk=pk, is_done=False, is_fail=False).first()
@@ -111,6 +118,8 @@ class FailTransactionView(APIView):
 
 
 class TransactionDetailView(APIView):
+    permission_classes = (IsApproved,)
+
     def get(self, request, pk):
         transaction = Transaction.objects.filter(pk=pk).first()
 
@@ -149,6 +158,33 @@ class TransactionQueueListView(ListAPIView):
 
     def get_queryset(self):
         return Transaction.objects.filter(is_done=False, is_fail=False)
+
+
+class MyTransactionListAllView(ListAPIView):
+    queryset = Transaction.objects.all()
+    serializer_class = TransactionSerializer
+
+    def get_queryset(self):
+        user = get_user(self.request)
+        return Transaction.objects.filter(user_id=user.id)
+
+
+class MyTransactionListWithdrawView(ListAPIView):
+    queryset = Transaction.objects.all()
+    serializer_class = TransactionSerializer
+
+    def get_queryset(self):
+        user = get_user(self.request)
+        return Transaction.objects.filter(user_id=user.id, way__title='withdraw')
+
+
+class MyTransactionListChargeView(ListAPIView):
+    queryset = Transaction.objects.all()
+    serializer_class = TransactionSerializer
+
+    def get_queryset(self):
+        user = get_user(self.request)
+        return Transaction.objects.filter(user_id=user.id, way__title='charge')
 
 
 class CreateTransactionDestinationView(APIView):
