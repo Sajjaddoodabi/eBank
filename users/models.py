@@ -2,11 +2,12 @@ import datetime
 
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.utils import timezone
 
 
 class User(AbstractUser):
     mobile = models.CharField(max_length=11)
-    birth_date = models.DateField(default=datetime.date.today())
+    birth_date = models.DateField(default=timezone.now)
     address = models.CharField(max_length=200, blank=True, null=True)
     national_code = models.CharField(max_length=20, blank=True, null=True)
     postal_code = models.CharField(max_length=20, blank=True, null=True)
