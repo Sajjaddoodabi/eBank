@@ -16,6 +16,6 @@ class User(AbstractUser):
         return f'{self.first_name} {self.last_name}'
 
     def __str__(self):
-        if self.get_full_name:
+        if self.get_full_name() != ' ':
             return self.get_full_name()
         return self.username
