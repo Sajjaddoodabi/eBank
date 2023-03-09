@@ -1,10 +1,12 @@
+import datetime
+
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 
 class User(AbstractUser):
     mobile = models.CharField(max_length=11)
-    birth_date = models.DateField()
+    birth_date = models.DateField(default=datetime.date.today())
     address = models.CharField(max_length=200, blank=True, null=True)
     national_code = models.CharField(max_length=20, blank=True, null=True)
     postal_code = models.CharField(max_length=20, blank=True, null=True)
@@ -15,5 +17,5 @@ class User(AbstractUser):
 
     def __str__(self):
         if self.get_full_name:
-            return self.get_full_name
+            return self.get_full_name()
         return self.username

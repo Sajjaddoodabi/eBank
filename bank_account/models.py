@@ -19,7 +19,7 @@ class Account(models.Model):
     is_approved = models.BooleanField(default=False)
 
     def __str__(self):
-        return f'{self.user} - {self.type}'
+        return f'{self.user.get_full_name()} - {self.type}'
 
 
 class Card(models.Model):
@@ -32,4 +32,4 @@ class Card(models.Model):
     is_ban = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.account.user
+        return self.account.user.get_full_name()
