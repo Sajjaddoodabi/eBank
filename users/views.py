@@ -8,12 +8,15 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
 
+from users.permissions import IsAuthenticated, IsNotAuthenticated, IsAdmin
 from users.models import User
 from users.serializers import UserSerializer, ChangePasswordSerializer, ResetPasswordSerializer, UserMiniSerializer, \
     UserFullSerializer, UserActivationSerializer, UserApprovalSerializer
 
 
 class RegisterView(APIView):
+    permission_classes = (IsNotAuthenticated,)
+
     def post(self, request):
         try:
             birth_date = request.data['birth_date']
@@ -45,6 +48,8 @@ class RegisterView(APIView):
 
 
 class LoginView(APIView):
+    permission_classes = (IsNotAuthenticated,)
+
     def post(self, request):
         username = request.data['username']
         password = request.data['password']
@@ -74,6 +79,8 @@ class LoginView(APIView):
 
 
 class LogoutView(APIView):
+    permission_classes = (IsAuthenticated,)
+
     def post(self, request):
         response = Response()
         response.delete_cookie('jwt')
@@ -81,6 +88,8 @@ class LogoutView(APIView):
 
 
 class UserView(APIView):
+    permission_classes = (IsAuthenticated,)
+
     def get(self, request):
         user = get_user(request)
 
@@ -89,11 +98,14 @@ class UserView(APIView):
 
 
 class UserListAllView(ListAPIView):
+    permission_classes = (IsAdmin,)
+
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
 
 class UserListActiveView(ListAPIView):
+    permission_classes = (IsAdmin,)
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
@@ -102,6 +114,7 @@ class UserListActiveView(ListAPIView):
 
 
 class UserListApprovedView(ListAPIView):
+    permission_classes = (IsAdmin,)
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
@@ -110,6 +123,8 @@ class UserListApprovedView(ListAPIView):
 
 
 class UserUpdateView(APIView):
+    permission_classes = (IsAuthenticated,)
+
     def put(self, request):
         user = get_user(request)
 
@@ -126,15 +141,16 @@ class UserUpdateView(APIView):
         user_ser = UserFullSerializer(user)
         return Response(user_ser.data)
 
-
-def patch(self, request):
-    serializer = UserMiniSerializer(data=request.data)
-    if serializer.is_valid():
-        pass
-    return Response()
+    def patch(self, request):
+        serializer = UserMiniSerializer(data=request.data)
+        if serializer.is_valid():
+            pass
+        return Response()
 
 
 class UserDeleteView(APIView):
+    permission_classes = (IsAuthenticated,)
+
     def delete(self, request):
         user = get_user(request)
         user.delete()
@@ -163,6 +179,8 @@ def get_user(request):
 
 
 class ChangeUserApprovalView(APIView):
+    permission_classes = (IsAdmin,)
+
     def post(self, request, pk):
         serializer = UserApprovalSerializer(data=request.data)
         if serializer.is_valid():
@@ -188,6 +206,8 @@ class ChangeUserApprovalView(APIView):
 
 
 class ChangeUserActivationView(APIView):
+    permission_classes = (IsAdmin,)
+
     def post(self, request, pk):
         serializer = UserActivationSerializer(data=request.data)
         if serializer.is_valid():
@@ -213,6 +233,8 @@ class ChangeUserActivationView(APIView):
 
 
 class ChangePasswordView(APIView):
+    permission_classes = (IsAuthenticated,)
+
     def post(self, request):
         serializer = ChangePasswordSerializer(data=request.data)
         if serializer.is_valid():
@@ -240,6 +262,8 @@ class ChangePasswordView(APIView):
 
 
 class ResetPasswordView(APIView):
+    permission_classes = (IsAuthenticated,)
+
     def post(self, request):
         serializer = ResetPasswordSerializer(data=request.data)
         if serializer.is_valid():
