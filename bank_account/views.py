@@ -3,7 +3,7 @@ import random
 
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.generics import ListAPIView, UpdateAPIView
+from rest_framework.generics import ListAPIView
 
 from users.permissions import IsApproved, IsAdmin
 from bank_account.models import AccountType, Account, Card
